@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "apaper-mcp": {
+      "command": "npx",
+      "args": ["-y", "@ai4paper/apaper-mcp"]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "apaper-plugin",
+  "description": "Academic paper authoring toolkit for Claude Code: bundles writing/figure/PDF skills with the apaper-mcp paper-research server.",
+  "version": "0.1.0",
+  "author": {
+    "name": "ai4paper",
+    "url": "https://github.com/ai4paper"
+  },
+  "homepage": "https://github.com/ai4paper/apaper-plugin",
+  "repository": "https://github.com/ai4paper/apaper-plugin",
+  "license": "MIT"
+}
