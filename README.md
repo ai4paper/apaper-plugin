@@ -32,11 +32,12 @@ demand via `npx -y @ai4paper/apaper-mcp`, so no global install is needed.
 
 ### From a marketplace (recommended)
 
-Add the marketplace that hosts this plugin and install:
+This repo ships its own `.claude-plugin/marketplace.json`, so you can add
+it as a marketplace and install in two commands:
 
 ```text
 /plugin marketplace add ai4paper/apaper-plugin
-/plugin install apaper-plugin
+/plugin install apaper-plugin@apaper
 ```
 
 ### Local development
@@ -63,6 +64,7 @@ Code to pick up the changes without restarting.
 ```text
 apaper-plugin/
 ├── .claude-plugin/
+│   ├── marketplace.json   # Marketplace catalog (single-plugin)
 │   └── plugin.json        # Plugin manifest
 ├── .mcp.json              # apaper-mcp server registration
 ├── skills/                # Bundled skills (each has a SKILL.md)
