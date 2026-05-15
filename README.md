@@ -12,13 +12,11 @@ figures, and process PDFs.
 
 Sourced from [`isomoes/skills`](https://github.com/isomoes/skills):
 
-| Skill                  | Purpose                                                  |
-| ---------------------- | -------------------------------------------------------- |
-| `ieee-journal-writing` | Revise and strengthen IEEE-style journal writing.        |
-| `isomoes-writing`      | Weekly reports and technical blog posts.                 |
-| `creating-figures`     | Publication-quality scientific figures with TikZ.        |
-| `pdf`                  | PDF extraction, generation, merge/split, and forms.      |
-| `find-skills`          | Discover and install additional agent skills.            |
+| Skill                  | Purpose                                             |
+| ---------------------- | --------------------------------------------------- |
+| `ieee-journal-writing` | Revise and strengthen IEEE-style journal writing.   |
+| `creating-figures`     | Publication-quality scientific figures with TikZ.   |
+| `pdf`                  | PDF extraction, generation, merge/split, and forms. |
 
 Once the plugin is enabled, the skills are namespaced under the plugin
 name, e.g. `/apaper-plugin:ieee-journal-writing`.
@@ -69,10 +67,9 @@ apaper-plugin/
 ├── .mcp.json              # apaper-mcp server registration
 ├── skills/                # Bundled skills (each has a SKILL.md)
 │   ├── creating-figures/
-│   ├── find-skills/
 │   ├── ieee-journal-writing/
-│   ├── isomoes-writing/
 │   └── pdf/
+├── CHANGELOG.md
 ├── LICENSE
 └── README.md
 ```
