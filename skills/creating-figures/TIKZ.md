@@ -400,6 +400,21 @@ When a container box has a label at the top, inner blocks must leave enough spac
 
 Ensure all similar containers use the same offset value for consistency.
 
+### Tap Junction Merges with Source Box Edge
+
+If a feedback tap drops from `(node.east)` directly, the down-line shares an
+x-coordinate with the box border and visually merges with the rectangle.
+Offset the tap onto the wire itself and mark the junction with a small
+filled dot — see the [Tap Junctions](PRINCIPLES.md#tap-junctions-branching-off-a-wire)
+rule:
+
+```latex
+% Tap on the wire, not at the box edge
+\coordinate (tap) at ($(plant.east)+(0.35cm,0)$);
+\fill[figdark] (tap) circle (1.2pt);
+\draw[thick, draw=figdark] (tap) |- (sensor.east);
+```
+
 ### Arrow Alignment
 
 Solution: Use anchors explicitly:

@@ -1,13 +1,20 @@
 ---
 name: creating-figures
-description: Creates publication-quality scientific figures for academic papers using TikZ. Use when creating block diagrams, system architectures, flowcharts, or technical illustrations for papers and theses. Always render a temporary PNG/JPG preview and self-verify visual quality before finalizing figure files.
+description: Creates publication-quality scientific figures for academic papers using LaTeX/TikZ or Typst. Use when creating block diagrams, system architectures, flowcharts, or technical illustrations for papers and theses. Always render a temporary PNG/JPG preview and self-verify visual quality before finalizing figure files.
 ---
 
 # Creating Scientific Figures
 
-Create compact, print-friendly figures for academic papers using LaTeX TikZ.
+Create compact, print-friendly figures for academic papers. Two backends are supported:
+
+- **LaTeX/TikZ** — the established academic standard, ideal for papers already built on LaTeX.
+- **Typst** — modern alternative with fast incremental compilation, ideal for Typst-based papers (uses the [`cetz`](https://typst.app/universe/package/cetz) package, a TikZ-inspired drawing library for Typst).
+
+Pick the backend that matches the surrounding paper. If the host document is unknown, ask the user (or look for `.tex` vs `.typ` files in the working tree).
 
 ## Quick Start
+
+### LaTeX/TikZ
 
 Minimal block diagram:
 
@@ -28,9 +35,38 @@ Minimal block diagram:
 \end{document}
 ```
 
+### Typst (CeTZ)
+
+Minimal block diagram:
+
+```typst
+#import "@preview/cetz:0.3.4"
+
+#set page(width: auto, height: auto, margin: 2mm)
+#set text(font: "New Computer Modern Sans", size: 9pt)
+
+#cetz.canvas(length: 1cm, {
+  import cetz.draw: *
+  set-style(stroke: 0.6pt + luma(25%))
+
+  let block(name, pos, body) = {
+    rect((rel: (-1, -0.4), to: pos), (rel: (1, 0.4), to: pos),
+      fill: luma(85%), name: name)
+    content(pos, body)
+  }
+
+  block("in",   (0, 0), [Input])
+  block("proc", (3, 0), [Process])
+  block("out",  (6, 0), [Output])
+
+  line("in.east",   "proc.west", mark: (end: ">"))
+  line("proc.east", "out.west",  mark: (end: ">"))
+})
+```
+
 ## Design Principles
 
-Key principles for academic figures:
+Key principles for academic figures (apply equally to both backends):
 
 1. **Grayscale palette**: Print-friendly, no color dependency
 2. **Compactness**: Minimize whitespace, maximize information
@@ -41,92 +77,43 @@ See [PRINCIPLES.md](PRINCIPLES.md) for complete design guidelines.
 
 ## Implementation
 
-**TikZ Block Diagrams**: See [TIKZ.md](TIKZ.md) for:
+- **LaTeX/TikZ block diagrams**: See [TIKZ.md](TIKZ.md) for preamble setup, style definitions, common patterns (linear, parallel, feedback loops), positioning, and edge labels.
+- **Typst block diagrams**: See [TYPST.md](TYPST.md) for the `cetz` setup, style helpers, named anchors, common patterns, and edge labeling.
 
-- Preamble setup and required packages
-- Standard style definitions
-- Common patterns (linear, parallel, feedback loops)
-- Positioning techniques
-- Edge labels and annotations
+**Working examples**:
 
-**Working Example**: See [examples/tikz/block-diagram.tex](examples/tikz/block-diagram.tex) for a complete PID control system diagram.
-
-## Standard Styles
-
-Copy these styles to your preamble:
-
-```latex
-% Grayscale colors
-\definecolor{figdark}{gray}{0.25}
-\definecolor{figlight}{gray}{0.85}
-
-% Block styles
-\tikzset{
-  block/.style={rectangle, draw=figdark, fill=figlight,
-    minimum width=2cm, minimum height=0.8cm,
-    text centered, font=\small\sffamily},
-  terminal/.style={rectangle, draw=figdark, fill=white,
-    minimum width=1.5cm, minimum height=0.6cm,
-    text centered, font=\small\sffamily},
-  arrow/.style={->, >=Stealth, thick, draw=figdark},
-  group/.style={draw=gray, dashed, fill=gray!5,
-    rounded corners=2pt, inner sep=8pt}
-}
-```
-
-## Common Patterns
-
-### Linear Flow
-
-```latex
-\node[block] (a) {A};
-\node[block, right=of a] (b) {B};
-\draw[arrow] (a) -- (b);
-```
-
-### Feedback Loop
-
-```latex
-\node[block] (proc) {Process};
-\node[block, below=of proc] (fb) {Feedback};
-\draw[arrow] (proc.east) -- ++(0.5,0) |- (fb.east);
-\draw[arrow] (fb.west) -| ($(proc.west)+(-0.5,0)$) -- (proc.west);
-```
-
-### Grouped Subsystem
-
-```latex
-\node[block] (a) {A};
-\node[block, right=of a] (b) {B};
-\begin{scope}[on background layer]
-  \node[group, fit=(a)(b), label=above:Subsystem] {};
-\end{scope}
-```
+- [examples/tikz/block-diagram.tex](examples/tikz/block-diagram.tex) — PID control system in TikZ
+- [examples/typst/block-diagram.typ](examples/typst/block-diagram.typ) — PID control system in Typst/CeTZ
 
 ## Workflow
 
-1. **Plan layout**: Sketch block arrangement on paper
-2. **Define styles**: Set up colors and node styles
-3. **Place nodes**: Use relative positioning (`right=of`, `below=of`)
-4. **Draw connections**: Add arrows with appropriate routing
-5. **Add labels**: Annotate edges and groups
-6. **Refine spacing**: Adjust for visual balance
-7. **Render preview**: Compile the standalone figure and create a temporary PNG or JPG preview
-8. **Self-verify**: Inspect the preview for visual quality and fix issues before finalizing
-9. **Test print**: Verify grayscale readability
+1. **Pick backend** to match the paper (LaTeX vs Typst). If unsure, check the working directory or ask.
+2. **Plan layout**: sketch block arrangement on paper.
+3. **Define styles**: set up colors, node styles, and spacing constants.
+4. **Place nodes**: use relative positioning (named anchors in CeTZ, `right=of`/`below=of` in TikZ).
+5. **Draw connections**: add arrows with appropriate routing.
+6. **Add labels**: annotate edges and groups.
+7. **Refine spacing**: adjust for visual balance.
+8. **Render preview**: compile the standalone figure and create a temporary PNG/JPG preview.
+9. **Self-verify**: inspect the preview for visual quality and fix issues before finalizing.
+10. **Test print**: verify grayscale readability.
 
 ## Required Self-Verification
 
-Every figure creation task must include a local render-and-check loop before final delivery. The source may compile successfully while still having unreadable labels, overlapping arrows, awkward whitespace, or misaligned groups; the raster preview catches these problems before the user sees them.
+Every figure creation task must include a local render-and-check loop before final delivery. Successful compilation does not prove visual quality — labels may be unreadable, arrows may overlap, whitespace may be awkward, groups may be misaligned. The raster preview catches these problems before the user sees them.
 
-1. Save the figure as standalone TikZ source (`.tex`).
-2. Compile it to PDF with `latexmk -pdf` or `pdflatex` from the figure directory.
-3. Convert the PDF to a temporary PNG or JPG preview using an available tool such as `pdftoppm`, ImageMagick `magick`, or `convert`.
+1. Save the figure as a standalone source file (`.tex` or `.typ`).
+2. Compile it to PDF:
+   - LaTeX: `latexmk -pdf figure.tex` (or `pdflatex figure.tex`)
+   - Typst: `typst compile figure.typ`
+3. Convert the PDF (or directly render PNG from Typst) to a temporary preview:
+   - LaTeX: `pdftoppm -png -singlefile -r 200 figure.pdf figure.preview` (or ImageMagick `magick`/`convert`)
+   - Typst: `typst compile --format png --ppi 200 figure.typ figure.preview.png`
 4. Open/read the temporary preview image and inspect it visually.
 5. Fix any quality problems, then rerender and reinspect until the preview is acceptable.
-6. Keep the final `.tex` and requested deliverables; remove or clearly mark temporary preview files unless the user asks to keep them.
+6. Keep the final source and requested deliverables; remove or clearly mark temporary preview files unless the user asks to keep them.
 
-Use a temporary preview filename such as `figure-name.preview.png` or place previews under a temporary directory. Do not treat successful LaTeX compilation as sufficient verification.
+Use a temporary preview filename such as `figure-name.preview.png`, or place previews under a temporary directory. Do not treat successful compilation as sufficient verification.
 
 Self-check the preview for:
 
@@ -141,13 +128,20 @@ Self-check the preview for:
 Example verification commands:
 
 ```bash
+# LaTeX
 latexmk -pdf system-diagram.tex
 pdftoppm -png -singlefile -r 200 system-diagram.pdf system-diagram.preview
+
+# Typst
+typst compile system-diagram.typ
+typst compile --format png --ppi 200 system-diagram.typ system-diagram.preview.png
 ```
 
 If `latexmk` is unavailable, use `pdflatex`. If `pdftoppm` is unavailable, use ImageMagick or another installed PDF-to-image converter.
 
 ## File Organization
+
+LaTeX project:
 
 ```
 your-paper/
@@ -157,4 +151,14 @@ your-paper/
 └── paper.tex                 % \includegraphics{figures/system-diagram}
 ```
 
-Compile standalone figures separately, then include as PDF for faster paper compilation.
+Typst project:
+
+```
+your-paper/
+├── figures/
+│   ├── system-diagram.typ    // Standalone fletcher/cetz source
+│   └── system-diagram.svg    // Compiled figure (or .pdf)
+└── paper.typ                 // #figure(image("figures/system-diagram.svg"))
+```
+
+Compile standalone figures separately, then include the rendered PDF/SVG for faster paper compilation. Typst can also embed a `.typ` figure directly via `#include`, but a precompiled image keeps the parent document fast.
