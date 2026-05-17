@@ -1,16 +1,28 @@
 ---
 name: creating-figures
-description: Creates publication-quality scientific figures for academic papers using LaTeX/TikZ or Typst. Use when creating block diagrams, system architectures, flowcharts, or technical illustrations for papers and theses. Always render a temporary PNG/JPG preview and self-verify visual quality before finalizing figure files.
+description: Creates publication-quality scientific figures for academic papers. Backend is chosen by host paper extension — `.tex` papers get TikZ figures, `.typ` papers get CeTZ figures; the two are never mixed. Use when creating block diagrams, system architectures, flowcharts, or technical illustrations for papers and theses. Always render a temporary PNG/JPG preview and self-verify visual quality before finalizing figure files.
 ---
 
 # Creating Scientific Figures
 
-Create compact, print-friendly figures for academic papers. Two backends are supported:
+Create compact, print-friendly figures for academic papers. Two backends are supported, and the choice is **determined by the host paper's file type — not by preference**:
 
-- **LaTeX/TikZ** — the established academic standard, ideal for papers already built on LaTeX.
-- **Typst** — modern alternative with fast incremental compilation, ideal for Typst-based papers (uses the [`cetz`](https://typst.app/universe/package/cetz) package, a TikZ-inspired drawing library for Typst).
+| Host paper                                 | Backend                                                           |
+| ------------------------------------------ | ----------------------------------------------------------------- |
+| LaTeX (`.tex`, `\documentclass{...}`)      | **TikZ** — see [TIKZ.md](TIKZ.md)                                 |
+| Typst (`.typ`)                             | **[CeTZ](https://typst.app/universe/package/cetz)** — see [TYPST.md](TYPST.md) |
 
-Pick the backend that matches the surrounding paper. If the host document is unknown, ask the user (or look for `.tex` vs `.typ` files in the working tree).
+### Detection rule
+
+Before generating any figure, identify the host paper:
+
+1. Look at the working directory (or the path the user gave you) for the main paper source.
+2. If it ends in `.tex` (or you find `\documentclass` / `\begin{document}` anywhere in the project), produce a TikZ figure.
+3. If it ends in `.typ` (or you find `#set page` / `#import "@preview/..."` anywhere in the project), produce a CeTZ figure.
+4. If both exist, default to whichever the user is currently editing or pointed you at.
+5. Only ask the user if neither extension is present in the working tree.
+
+Never mix backends: a TikZ figure cannot be included in a Typst paper (and vice versa) without first compiling to a standalone PDF/SVG.
 
 ## Quick Start
 
@@ -87,7 +99,7 @@ See [PRINCIPLES.md](PRINCIPLES.md) for complete design guidelines.
 
 ## Workflow
 
-1. **Pick backend** to match the paper (LaTeX vs Typst). If unsure, check the working directory or ask.
+1. **Pick backend** by host paper extension: `.tex` → TikZ, `.typ` → CeTZ. See the detection rule above.
 2. **Plan layout**: sketch block arrangement on paper.
 3. **Define styles**: set up colors, node styles, and spacing constants.
 4. **Place nodes**: use relative positioning (named anchors in CeTZ, `right=of`/`below=of` in TikZ).
@@ -156,7 +168,7 @@ Typst project:
 ```
 your-paper/
 ├── figures/
-│   ├── system-diagram.typ    // Standalone fletcher/cetz source
+│   ├── system-diagram.typ    // Standalone CeTZ source
 │   └── system-diagram.svg    // Compiled figure (or .pdf)
 └── paper.typ                 // #figure(image("figures/system-diagram.svg"))
 ```
