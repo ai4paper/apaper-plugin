@@ -1,10 +1,10 @@
 # apaper-plugin
 
-A Claude Code plugin for academic paper authoring. It bundles writing,
-figure, and PDF skills together with the [`apaper-mcp`](https://github.com/ai4paper/apaper-mcp)
+A Claude Code plugin for academic paper authoring. It bundles writing and
+figure skills together with the [`apaper-mcp`](https://github.com/ai4paper/apaper-mcp)
 paper-research MCP server so a single install gives Claude Code everything
-it needs to search the literature, draft IEEE-style prose, generate TikZ
-figures, and process PDFs.
+it needs to search the literature, draft IEEE-style prose, and generate TikZ
+figures.
 
 ## What's inside
 
@@ -16,7 +16,6 @@ Sourced from [`isomoes/skills`](https://github.com/isomoes/skills):
 | ---------------------- | --------------------------------------------------- |
 | `ieee-journal-writing` | Revise and strengthen IEEE-style journal writing.   |
 | `creating-figures`     | Publication-quality scientific figures with TikZ.   |
-| `pdf`                  | PDF extraction, generation, merge/split, and forms. |
 
 Once the plugin is enabled, the skills are namespaced under the plugin
 name, e.g. `/apaper-plugin:ieee-journal-writing`.
@@ -57,7 +56,6 @@ Code to pick up the changes without restarting.
 - [Claude Code](https://code.claude.com/) with plugin support
 - `npx` on `PATH` (ships with Node.js) for the MCP server
 - For the `creating-figures` skill: a working LaTeX/TikZ toolchain
-- For the `pdf` skill: Python tooling as documented inside the skill
 
 ## Layout
 
@@ -69,8 +67,7 @@ apaper-plugin/
 ├── .mcp.json              # apaper-mcp server registration
 ├── skills/                # Bundled skills (each has a SKILL.md)
 │   ├── creating-figures/
-│   ├── ieee-journal-writing/
-│   └── pdf/
+│   └── ieee-journal-writing/
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md

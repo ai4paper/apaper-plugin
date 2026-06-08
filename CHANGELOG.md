@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Skills: Removed the `pdf` skill. Claude Code's Read tool now reads PDFs natively with page-range support (`pages` parameter, up to 20 pages per request), making the bundled extraction toolkit redundant for the plugin's read-the-paper workflow. (@isomoes)
+
 ## [0.1.1] - 2026-05-15
 
 - Release: Added tag-driven GitHub Actions release workflow and `prompt/release.md` documenting the release flow. (@isomoes) 6f92525

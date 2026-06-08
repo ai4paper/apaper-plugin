@@ -8,7 +8,7 @@
     {
       "name": "apaper-plugin",
       "source": "./",
-      "description": "Academic paper authoring toolkit: writing/figure/PDF skills plus the apaper-mcp paper-research server.",
+      "description": "Academic paper authoring toolkit: writing/figure skills plus the apaper-mcp paper-research server.",
       "version": "0.1.1",
       "author": {
         "name": "ai4paper",
