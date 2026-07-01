@@ -11,7 +11,7 @@ minimal cleanup.
 - Keep `\ref{}` and `\label{}` usage consistent, with prefixes such as `fig:`, `tab:`, and `eq:`.
 - Use `booktabs` rules for tables; avoid manual vertical lines.
 - Use `\emph{}` for emphasis, not manual bold.
-- Follow math conventions: italic variables (`x`), roman functions and units (`\sin`, `\mathrm{cm}`), bold vectors (`\mathbf{x}`); define symbols on first use and keep notation consistent.
+- Follow math conventions: italic variables (`x`), roman functions and units (`\sin`, `\mathrm{cm}`), bold vectors (`\mathbf{x}`); define symbols on first use and keep notation consistent. For theorem-specific notation such as `h_{\mathrm{top}}` vs `h_{\text{top}}`, `\liminf`, and brace minimization, see [THEOREMS.md](THEOREMS.md).
 - Use `\section{}`/`\subsection{}` and `itemize`/`enumerate`; never set font sizes by hand.
 - Prefer compact layouts; avoid excessive whitespace.
 

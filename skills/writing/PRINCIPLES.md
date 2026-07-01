@@ -2,7 +2,8 @@
 
 These principles apply to every academic writing task. For journal- and IEEE-specific
 style, section templates, and structure checks, see [JOURNAL.md](JOURNAL.md). For LaTeX
-and BibTeX conventions, see [LATEX.md](LATEX.md).
+and BibTeX conventions, see [LATEX.md](LATEX.md). For polishing the formal statement of a
+theorem, lemma, or proposition, see [THEOREMS.md](THEOREMS.md).
 
 ## Preserve Meaning and Integrity
 

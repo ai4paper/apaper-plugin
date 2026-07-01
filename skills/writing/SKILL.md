@@ -1,6 +1,6 @@
 ---
 name: writing
-description: Revises and strengthens academic writing for papers, especially when the user is drafting or polishing LaTeX sections, improving technical prose, aligning with reviewer expectations, or asking for more formal, concise, publication-ready language. Use this skill whenever the task involves rewriting abstract, introduction, methods, results, discussion, conclusion, captions, or reviewer responses for an engineering or scientific paper. When the work targets a journal or IEEE-style manuscript — even if the user does not say "IEEE" — also apply the journal rules in JOURNAL.md.
+description: Revises and strengthens academic writing for papers, especially when the user is drafting or polishing LaTeX sections, improving technical prose, aligning with reviewer expectations, or asking for more formal, concise, publication-ready language. Use this skill whenever the task involves rewriting abstract, introduction, methods, results, discussion, conclusion, captions, or reviewer responses for an engineering or scientific paper. When the work targets a journal or IEEE-style manuscript — even if the user does not say "IEEE" — also apply the journal rules in JOURNAL.md. When the task is to polish the formal statement of a theorem, lemma, or proposition, also apply the statement rules in THEOREMS.md.
 ---
 
 # Academic Writing
@@ -35,6 +35,7 @@ The writing rules are split by concern. Always apply [PRINCIPLES.md](PRINCIPLES.
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
 | [PRINCIPLES.md](PRINCIPLES.md) | Always. Core prose principles, sentence flow, editing heuristics, safeguards, and self-review.                          |
 | [JOURNAL.md](JOURNAL.md)       | Journal or IEEE-style manuscripts — even if the user never says "IEEE." Venue tone, section templates, structure checks. |
+| [THEOREMS.md](THEOREMS.md)     | Polishing the formal statement of a theorem, lemma, or proposition — the cited block, not its proof. Statement structure, ordering, and notation. |
 | [LATEX.md](LATEX.md)           | The user is editing a LaTeX manuscript or `*.bib` file. LaTeX and BibTeX conventions.                                    |
 
 ### Detecting journal / IEEE work
@@ -46,6 +47,10 @@ Apply [JOURNAL.md](JOURNAL.md) when any of these hold, even without the word "IE
 3. The user asks for reviewer-ready, publication-ready, or formal academic tone for a paper.
 
 When in doubt on an academic paper, default to applying the journal rules — they are a superset of good general academic style.
+
+### Detecting theorem-statement work
+
+Apply [THEOREMS.md](THEOREMS.md) whenever the task is to polish the formal statement of a theorem, lemma, proposition, or corollary — the cited block, not its proof or the surrounding prose. Signals include a `\begin{theorem}` / `\begin{lemma}` environment, a "Theorem N." block, or a request to tighten hypotheses, reorder conclusions, or make a statement more AMS/Devaney-style.
 
 ## Response Patterns
 

@@ -3,6 +3,8 @@
 Apply these rules on top of [PRINCIPLES.md](PRINCIPLES.md) whenever the task targets a
 journal or IEEE-style manuscript — even if the user never says "IEEE." See the detection
 rule in [SKILL.md](SKILL.md). For LaTeX and BibTeX conventions, see [LATEX.md](LATEX.md).
+For the formal statement of a theorem, lemma, or proposition, also apply
+[THEOREMS.md](THEOREMS.md).
 
 ## IEEE-Oriented Style Guidance
 
