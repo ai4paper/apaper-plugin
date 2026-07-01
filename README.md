@@ -17,10 +17,10 @@ CLI).
 
 Sourced from [`isomoes/skills`](https://github.com/isomoes/skills):
 
-| Skill                  | Purpose                                             |
-| ---------------------- | --------------------------------------------------- |
-| `ieee-journal-writing` | Revise and strengthen IEEE-style journal writing.   |
-| `creating-figures`     | Publication-quality scientific figures (TikZ/CeTZ). |
+| Skill              | Purpose                                                          |
+| ------------------ | --------------------------------------------------------------- |
+| `writing`          | Revise and strengthen academic prose; applies IEEE journal rules for journal work. |
+| `creating-figures` | Publication-quality scientific figures (TikZ/CeTZ).             |
 
 ### MCP server (`.mcp.json`)
 
@@ -43,7 +43,7 @@ it as a marketplace and install in two commands:
 
 The bundled MCP server is registered automatically. Once the plugin is
 enabled, the skills are namespaced under the plugin name, e.g.
-`/apaper-plugin:ieee-journal-writing`.
+`/apaper-plugin:writing`.
 
 ## Install for Codex
 
@@ -63,7 +63,7 @@ npx skills add ai4paper/apaper-plugin -a codex
 npx skills add ai4paper/apaper-plugin -a codex -g
 
 # Pick specific skills by name
-npx skills add ai4paper/apaper-plugin -a codex --skill ieee-journal-writing creating-figures
+npx skills add ai4paper/apaper-plugin -a codex --skill writing creating-figures
 ```
 
 Add `-y` to skip the confirmation prompt, or `--list` to preview the

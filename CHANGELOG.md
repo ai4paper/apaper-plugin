@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Skills: Renamed `ieee-journal-writing` to `writing` and split its single `SKILL.md` into a router plus `PRINCIPLES.md` (always-on prose rules), `JOURNAL.md` (IEEE/journal style, section templates, structure checks), and `LATEX.md` (LaTeX/BibTeX conventions). The skill now covers general academic writing and applies the journal rules when the work targets a journal or IEEE-style manuscript. (@isomoes)
+
 ## [0.1.2] - 2026-06-08
 
 - Skills: Removed the `pdf` skill. Claude Code's Read tool now reads PDFs natively with page-range support (`pages` parameter, up to 20 pages per request), making the bundled extraction toolkit redundant for the plugin's read-the-paper workflow. (@isomoes) c6ad657
