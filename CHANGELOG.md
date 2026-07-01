@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- Skills: Renamed `ieee-journal-writing` to `writing` and split its single `SKILL.md` into a router plus `PRINCIPLES.md` (always-on prose rules), `JOURNAL.md` (IEEE/journal style, section templates, structure checks), and `LATEX.md` (LaTeX/BibTeX conventions). The skill now covers general academic writing and applies the journal rules when the work targets a journal or IEEE-style manuscript. (@isomoes)
+## [0.1.3] - 2026-07-01
+
+- Skills: Added `THEOREMS.md` to the writing skill — guidance for polishing formal theorem, lemma, and proposition statements (eight statement rules, existence-first ordering, theorem-specific LaTeX notation, a worked before/after example, and a reusable polishing prompt), wired into the router and cross-linked from the other rule files. (@isomoes) 261cfcb
+- Skills: Renamed `ieee-journal-writing` to `writing` and split its single `SKILL.md` into a router plus `PRINCIPLES.md` (always-on prose rules), `JOURNAL.md` (IEEE/journal style, section templates, structure checks), and `LATEX.md` (LaTeX/BibTeX conventions). The skill now covers general academic writing and applies the journal rules when the work targets a journal or IEEE-style manuscript. (@isomoes) 9f544fa
+- Docs: Reframed the README around AI coding agents generally and added an "Install for Codex" section (skills via the `npx skills` CLI, apaper-mcp via `~/.codex/config.toml`), splitting the Claude Code and Codex install paths. (@isomoes) f0d14d0
 
 ## [0.1.2] - 2026-06-08
 
