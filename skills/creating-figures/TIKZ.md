@@ -33,19 +33,19 @@ Grayscale palette (add to preamble):
 
 ## Standard Styles
 
-Define reusable styles at the start of your tikzpicture or in preamble:
+Define reusable styles at the start of your tikzpicture or in preamble. Primary node styles carry **no font size command** — they inherit the document's body size (`\normalsize`), which is what keeps figure text the same size as the paper's text. Only secondary/tertiary styles step down, and only with relative commands (`\footnotesize`, `\scriptsize`) that track the base size:
 
 ```latex
 \tikzset{
-  % Primary processing block
+  % Primary processing block — no size command: inherits body size
   block/.style={
     rectangle,
     draw=figdark,
     fill=figlight,
     minimum width=2cm,
     minimum height=0.8cm,
-    text centered,
-    font=\small\sffamily
+    align=center,
+    font=\sffamily
   },
   % Input/output terminal
   terminal/.style={
@@ -54,8 +54,8 @@ Define reusable styles at the start of your tikzpicture or in preamble:
     fill=white,
     minimum width=1.5cm,
     minimum height=0.6cm,
-    text centered,
-    font=\small\sffamily
+    align=center,
+    font=\sffamily
   },
   % Decision diamond
   decision/.style={
@@ -64,8 +64,8 @@ Define reusable styles at the start of your tikzpicture or in preamble:
     fill=figlight,
     minimum width=1.2cm,
     minimum height=1.2cm,
-    text centered,
-    font=\small\sffamily,
+    align=center,
+    font=\sffamily,
     aspect=1.5
   },
   % Small auxiliary block
@@ -75,7 +75,7 @@ Define reusable styles at the start of your tikzpicture or in preamble:
     fill=figlight,
     minimum width=1.5cm,
     minimum height=0.6cm,
-    text centered,
+    align=center,
     font=\footnotesize\sffamily
   },
   % Subsystem grouping
@@ -319,23 +319,26 @@ Connect at specific points:
 
 ## Scaling and Export
 
-### Figure Width Control
+### Fitting the Column Width
 
-Scale to specific width:
+Never shrink a finished figure to fit — scaled-down text no longer matches the paper's body size. The working levers are:
 
-```latex
-\begin{tikzpicture}[scale=0.8, every node/.style={scale=0.8}]
-  % ... content ...
-\end{tikzpicture}
-```
+- reduce `node distance` and `minimum width` values,
+- shorten labels or break them onto two lines (`\\` with `align=center`).
+
+`[scale=...]` is **not** a usable lever: plain `scale` rescales only explicit numeric coordinates (`at (4,0)`). It does nothing to `right=of`/`below=of` positioning offsets, node-anchor coordinates, or `minimum width`/`minimum height` — on the positioning-based layouts this guide teaches it is a silent no-op, and on absolute-coordinate layouts it moves node centers while node bodies stay full size, which can create overlaps.
+
+Avoid `\resizebox{\columnwidth}{!}{...}`, `every node/.style={scale=...}`, `transform shape`, and `\includegraphics[width=\columnwidth]{...}` on figures that contain text — all of them silently change the effective font size.
 
 ### Standalone Compilation
 
-For separate PDF figures:
+For separate PDF figures. The class size option must **match the host paper's base size** (e.g. `10pt` for a 10pt IEEEtran paper) — this is what `\normalsize` inside the figure resolves against. Load the same font packages as the paper so the family matches too:
 
 ```latex
-\documentclass[tikz,border=2mm]{standalone}
+% 10pt = the host paper's base font size — copy it from the paper
+\documentclass[tikz,border=2mm,10pt]{standalone}
 \usetikzlibrary{...}
+% same font packages as the paper
 % color definitions
 % style definitions
 \begin{document}
@@ -344,6 +347,14 @@ For separate PDF figures:
 \end{tikzpicture}
 \end{document}
 ```
+
+Caveat: standalone's default underlying class is article, which supports only `10pt`/`11pt`/`12pt`. Any other size option (e.g. `9pt` for a 9pt IEEEtran paper) is **silently ignored** — the figure falls back to 10pt with nothing but an `Unused global option(s)` line in the log, so the figure text ends up larger than the body text. For such papers load the paper's own class instead:
+
+```latex
+\documentclass[9pt,border=2mm,class=IEEEtran,tikz]{standalone}
+```
+
+Either way, verify the rendered text size in the preview against a sample of the paper's body text.
 
 ### Preview Rendering and QA
 
@@ -358,6 +369,8 @@ If `latexmk` is unavailable, run `pdflatex system-diagram.tex`. If `pdftoppm` is
 
 ### Integration in Document
 
+Embedding the `tikzpicture` directly in the paper is the guaranteed size match — the figure inherits the document's font family and body size automatically:
+
 ```latex
 \begin{figure}[htbp]
   \centering
@@ -369,7 +382,17 @@ If `latexmk` is unavailable, run `pdflatex system-diagram.tex`. If `pdftoppm` is
 \end{figure}
 ```
 
+When including a precompiled standalone PDF instead, include it at natural size — no `width=` — so the text stays at body size:
+
+```latex
+\includegraphics{figures/system-diagram}   % NOT [width=\columnwidth]
+```
+
 ## Common Issues
+
+### Figure Text Smaller Than Body Text
+
+Cause: a hardcoded size command in node styles (`font=\small`), a standalone class size that differs from the paper's, or shrink-on-include (`width=\columnwidth`, `\resizebox`). Fix: drop the size command from primary styles, match the standalone class size option to the paper, and include at natural size — see [Fitting the Column Width](#fitting-the-column-width).
 
 ### Overlapping Labels
 

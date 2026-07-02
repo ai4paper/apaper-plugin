@@ -31,11 +31,14 @@ Never mix backends: a TikZ figure cannot be included in a Typst paper (and vice 
 Minimal block diagram:
 
 ```latex
-\documentclass[tikz,border=2mm]{standalone}
+% 10pt = the host paper's base font size — copy it from the paper, don't pick your
+% own. (Sizes other than 10/11/12pt are silently dropped by article; use
+% class=<paperclass> instead — see TIKZ.md, Standalone Compilation.)
+\documentclass[tikz,border=2mm,10pt]{standalone}
 \usetikzlibrary{arrows.meta,positioning}
 \begin{document}
 \begin{tikzpicture}[
-  block/.style={rectangle, draw, fill=gray!15, minimum width=2cm, minimum height=0.8cm, font=\small\sffamily},
+  block/.style={rectangle, draw, fill=gray!15, minimum width=2cm, minimum height=0.8cm, font=\sffamily},
   arrow/.style={->, >=Stealth, thick}
 ]
   \node[block] (a) {Input};
@@ -55,7 +58,8 @@ Minimal block diagram:
 #import "@preview/cetz:0.3.4"
 
 #set page(width: auto, height: auto, margin: 2mm)
-#set text(font: "New Computer Modern Sans", size: 9pt)
+// 10pt = the host paper's body text size — copy it from the paper, don't pick your own.
+#set text(font: "New Computer Modern Sans", size: 10pt)
 
 #cetz.canvas(length: 1cm, {
   import cetz.draw: *
@@ -84,6 +88,7 @@ Key principles for academic figures (apply equally to both backends):
 2. **Compactness**: Minimize whitespace, maximize information
 3. **Consistency**: Uniform sizing, spacing, typography
 4. **Hierarchy**: Line weight and gray levels show importance
+5. **Body-matched text**: Figure text renders at the same size as the paper's body text — take the base size from the host paper (never hardcode a figure-specific size) and include the figure at natural size (never rescale it at inclusion)
 
 See [PRINCIPLES.md](PRINCIPLES.md) for complete design guidelines.
 
@@ -130,6 +135,7 @@ Use a temporary preview filename such as `figure-name.preview.png`, or place pre
 Self-check the preview for:
 
 - text legibility at paper scale and at 50% zoom
+- figure text at the paper's body text size (nothing hardcoded smaller, nothing that will be shrunk by scaled inclusion)
 - no overlapping text, labels, arrows, nodes, or group boxes
 - arrowheads and line routes point in the intended direction
 - consistent node sizes, spacing, alignment, and margins
@@ -173,4 +179,6 @@ your-paper/
 └── paper.typ                 // #figure(image("figures/system-diagram.svg"))
 ```
 
-Compile standalone figures separately, then include the rendered PDF/SVG for faster paper compilation. Typst can also embed a `.typ` figure directly via `#include`, but a precompiled image keeps the parent document fast.
+Compile standalone figures separately, then include the rendered PDF/SVG for faster paper compilation. Note that directly `#include`-ing the standalone `.typ` source into a Typst paper does **not** work with this template — its `#set page(...)` is rejected inside containers (`page configuration is not allowed inside of containers`) — so precompiling to SVG/PDF is the working path.
+
+Include the compiled figure at its **natural size** — no `width=\columnwidth`, no `width: 80%`. Rescaling at inclusion silently shrinks the figure text below the paper's body size. If the figure is too wide for the column, tighten its internal geometry (node spacing, block widths) and recompile instead of scaling it down. In Typst, omitting `width:` is not enough — an image wider than the column is silently downscaled to fit, so also confirm the compiled figure's intrinsic width (the `width="...pt"` attribute of the SVG) fits the column.

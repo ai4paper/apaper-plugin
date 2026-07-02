@@ -78,21 +78,15 @@ Text padding:   2mm internal margin
 
 ### Font Sizes
 
-LaTeX:
+**The base font size of a figure is the host paper's body text size.** Figure text must print at the same size as the surrounding paragraph text — never pick a fixed size for the figure independent of the paper.
 
-```latex
-\small         % Primary labels (recommended)
-\footnotesize  % Secondary annotations
-\scriptsize    % Tertiary details (use sparingly)
-```
+- **Derive, don't hardcode**: LaTeX — give the standalone class the same size option as the paper's class (e.g. `\documentclass[tikz,border=2mm,10pt]{standalone}` for a 10pt paper). Typst — set `#set text(size: ...)` to the exact value the paper uses and keep the two in sync (or move the value into a shared style file both import).
+- **Primary labels**: body size — no size command at all in LaTeX (inherit `\normalsize`); inherit the base `#set text` size in Typst.
+- **Secondary annotations** (edge labels, group titles): one relative step down — `\footnotesize` (LaTeX), `0.8em` (Typst).
+- **Tertiary details** (use sparingly): `\scriptsize` (LaTeX), `0.7em` (Typst).
+- **Never rescale at inclusion**: `\includegraphics[width=...]`, `\resizebox`, `scale` with `transform shape`, or Typst `image(..., width: ...)` all change the effective font size and break the match with the body text. Include at natural size and fit the column by shrinking the figure's geometry (spacing, node sizes), not its text. In Typst, also verify the figure's intrinsic width fits the column — an over-wide image is silently downscaled even without `width:`.
 
-Typst (approximate equivalents):
-
-```typst
-9pt   // Primary labels (recommended)
-8pt   // Secondary annotations
-7pt   // Tertiary details (use sparingly)
-```
+Relative commands and `em` units track the base size, so the hierarchy survives a paper-wide font size change without editing the figure.
 
 ### Label Placement
 
@@ -116,7 +110,7 @@ very thick  % 1.2pt - emphasis only
 Standard arrow conventions:
 
 - **Data flow**: Solid line, filled arrowhead (`-Stealth`)
-- **Control flow**: Solid line, open arrowhead (`-Latex`)
+- **Control flow**: Solid line, open arrowhead (`-{Latex[open]}` — plain `-Latex` is filled and indistinguishable from `-Stealth`)
 - **Optional/conditional**: Dashed line
 - **Bidirectional**: Double-headed arrow
 
@@ -212,6 +206,7 @@ Before finalizing a figure:
 - [ ] Temporary PNG/JPG preview was rendered from the compiled figure
 - [ ] Preview was visually inspected and any issues were fixed
 - [ ] All text readable at intended print size
+- [ ] Figure text prints at the paper's body font size (base size taken from the paper, no hardcoded figure-specific size, no scaling at inclusion)
 - [ ] Consistent spacing throughout
 - [ ] No orphaned or misaligned elements
 - [ ] Arrows point in logical flow direction

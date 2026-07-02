@@ -14,8 +14,12 @@ Standalone figure preamble:
 
 // Tight page: figure decides its own size.
 #set page(width: auto, height: auto, margin: 2mm)
-#set text(font: "New Computer Modern Sans", size: 9pt)
+// 10pt = the host paper's body text size — copy it from the paper's
+// #set text(size: ...) and keep the two in sync.
+#set text(font: "New Computer Modern Sans", size: 10pt)
 ```
+
+The font must actually be installed (or supplied via `--font-path`) — "New Computer Modern Sans" ships with LaTeX, not with Typst. A missing family produces only an `unknown font family` **warning** while Typst silently falls back to its default serif, so treat that warning as a failure.
 
 Pin the cetz version (e.g. `0.3.4`) so future rebuilds stay reproducible. Bump deliberately, not opportunistically. The CeTZ API has changed between minor versions — examples in this document target `0.3.x`.
 
@@ -79,17 +83,26 @@ Wrap the recurring node/arrow shapes in small helpers — the CeTZ equivalent of
   // Summing junction (small circle)
   let sum(name, pos, body) = {
     circle(pos, radius: 0.25cm, fill: white, name: name)
-    content(pos, text(size: 7pt, body))
+    content(pos, text(size: 0.7em, body))
   }
 
-  // Decision diamond
-  let decision(name, pos, body, width: 1.4cm, height: 1cm) = {
+  // Decision diamond. Dimensions are canvas-unit numbers (not lengths) so
+  // they can be added to the position components. A closed line only
+  // exposes a centroid anchor in cetz, so declare the compass anchors
+  // explicitly inside a named group.
+  let decision(name, pos, body, width: 1.4, height: 1.0) = {
     let (x, y) = pos
-    line(
-      (x, y + height/2), (x + width/2, y),
-      (x, y - height/2), (x - width/2, y), close: true,
-      fill: fig-light, name: name,
-    )
+    group(name: name, {
+      line(
+        (x, y + height/2), (x + width/2, y),
+        (x, y - height/2), (x - width/2, y), close: true,
+        fill: fig-light,
+      )
+      anchor("north", (x, y + height/2))
+      anchor("south", (x, y - height/2))
+      anchor("east",  (x + width/2, y))
+      anchor("west",  (x - width/2, y))
+    })
     content(pos, body)
   }
 
@@ -130,7 +143,7 @@ Relative coordinates use `(rel: (dx, dy), to: anchor)`:
 line("a.east", (rel: (1, 0), to: "a.east"), mark: (end: ">"))
 ```
 
-For midpoints, named coordinates, and arithmetic, use `coordinate` or compute inline:
+For midpoints and arithmetic, bind positions to `let` variables or compute inline (there is no `coordinate` function in cetz; for reusable named positions, declare an `anchor(...)` inside a named `group`):
 
 ```typst
 let mid = ((0, 0), 50%, (4, 0))   // 50% along the segment
@@ -194,20 +207,22 @@ line("b.east", (4.5, -1), (4.5, 0), "end.west", mark: (end: ">"))
 Route the return path around the forward chain with explicit waypoints:
 
 ```typst
-terminal("ref",  (0, 0), $r$)
-sum     ("sum",  (1.5, 0), $Sigma$)
-block   ("ctrl", (3.5, 0), [Controller])
-block   ("plnt", (6.5, 0), [Plant])
-terminal("out",  (8.5, 0), $y$)
-block   ("sens", (5,  -1.5), [Sensor])
+terminal("ref", (0, 0), $r$)
+sum("sum", (1.5, 0), $Sigma$)
+block("ctrl", (3.5, 0), [Controller])
+block("plnt", (6.5, 0), [Plant])
+terminal("out", (9, 0), $y$)
+block("sens", (5, -1.5), [Sensor])
 
 arrow("ref.east",  "sum.west")
 arrow("sum.east",  "ctrl.west")
 arrow("ctrl.east", "plnt.west")
 arrow("plnt.east", "out.west")
 
-// Tap between Plant and y, down to Sensor's right, back to sum's south.
-let tap = ((rel: (0.5, 0), to: "plnt.east"))
+// Tap between Plant and y — on the wire, clear of the arrowhead — down to
+// Sensor's right, back to sum's south. A filled dot marks the junction.
+let tap = ((rel: (0.35, 0), to: "plnt.east"))
+circle(tap, radius: 1.2pt, fill: fig-dark, stroke: none)
 line(tap, (rel: (0, -1.5), to: tap), "sens.east",
   stroke: 0.8pt + fig-dark)
 line("sens.west", (1.5, -1.5), "sum.south", mark: (end: ">"))
@@ -225,7 +240,7 @@ rect((-0.2, -0.6), (3.2, 0.8),
   radius: 2pt,
   name: "sub")
 content((rel: (0, 0.2), to: "sub.north"),
-  text(size: 8pt)[Subsystem])
+  text(size: 0.8em)[Subsystem])
 
 // Inner blocks
 block("a", (0.5, 0), [A])
@@ -238,10 +253,10 @@ If you do not want to hand-size the rectangle, draw the inner blocks first insid
 ### Decision Branch
 
 ```typst
-block   ("proc", (0, 0), [Process])
-decision("dec",  (3, 0), [Check])
-block   ("yes",  (6,  1), [Accept])
-block   ("no",   (6, -1), [Reject])
+block("proc", (0, 0), [Process])
+decision("dec", (3, 0), [Check])
+block("yes", (6, 1), [Accept])
+block("no", (6, -1), [Reject])
 
 arrow("proc.east", "dec.west")
 line("dec.east", (4.5, 0), (4.5,  1), "yes.west",
@@ -249,38 +264,41 @@ line("dec.east", (4.5, 0), (4.5,  1), "yes.west",
 line("dec.east", (4.5, 0), (4.5, -1), "no.west",
   mark: (end: ">"))
 
-content((4.7, 0.6), text(size: 8pt)[yes])
-content((4.7, -0.6), text(size: 8pt)[no])
+content((4.7, 0.6), text(size: 0.8em)[yes])
+content((4.7, -0.6), text(size: 0.8em)[no])
 ```
+
+Note: Typst code mode forbids whitespace between a function name and its argument list — TikZ-style aligned calls like `block   ("proc", ...)` are syntax errors.
 
 ## Edge Labels
 
-Place labels with `content` at a computed midpoint, optionally with a white background to mask the line underneath:
+Place labels with `content` at a computed midpoint, optionally with a white background to mask the line underneath. Draw order is z-order in cetz, so draw the line **first** and the label after it — otherwise the line paints on top of the label and strikes through the text:
 
 ```typst
 let mid = ("a.east", 50%, "b.west")
-content(mid, box(fill: white, inset: 1pt,
-  text(size: 8pt)[data]))
 line("a.east", "b.west", mark: (end: ">"))
+content(mid, box(fill: white, inset: 1pt,
+  text(size: 0.8em)[data]))
 ```
 
 For labels above/below the line, offset the content point:
 
 ```typst
-content((rel: (0, 0.3), to: mid), text(size: 8pt)[above])
-content((rel: (0, -0.3), to: mid), text(size: 8pt)[below])
+content((rel: (0, 0.3), to: mid), text(size: 0.8em)[above])
+content((rel: (0, -0.3), to: mid), text(size: 0.8em)[below])
 ```
 
 For sloped labels along a non-horizontal line, compute the angle (`calc.atan2(...)`) and pass it as `angle:` to `content`.
 
 ## Typography
 
-- Use `#set text(font: "New Computer Modern Sans", size: 9pt)` (or whatever sans-serif matches the paper) at the top of the standalone figure.
+- Set the figure's base text size to **the host paper's body text size** — copy the value from the paper's `#set text(size: ...)` and keep the two in sync (or move the value into a shared style file both import). Never pick a figure-specific size.
+- Primary labels carry no explicit size: they inherit the base `#set text` size, so figure text prints at the same size as paragraph text.
+- Express the internal hierarchy in `em` units so it tracks the base size:
+  - inherit (primary labels — no size argument)
+  - `0.8em` ≈ `\footnotesize` (edge labels, secondary annotations)
+  - `0.7em` ≈ `\scriptsize` (tertiary only)
 - For math, use Typst math mode directly inside any content argument: `$y(t)$`, `$C(s)$`. CeTZ accepts arbitrary content.
-- Mirror the LaTeX hierarchy:
-  - `9pt` ≈ `\small` (primary labels)
-  - `8pt` ≈ `\footnotesize` (edge labels, secondary annotations)
-  - `7pt` ≈ `\scriptsize` (tertiary only)
 
 ## Compilation
 
@@ -308,20 +326,28 @@ Check for the same issues listed in [SKILL.md](SKILL.md): overlap, cramped label
 
 ## Integration in a Typst Paper
 
+Include the compiled figure with no `width:` argument:
+
 ```typst
 #figure(
-  image("figures/system-diagram.svg", width: 80%),
+  image("figures/system-diagram.svg"),   // NOT image(..., width: 80%)
   caption: [System block diagram.],
 ) <fig:block-diagram>
 ```
+
+Omitting `width:` is necessary but **not sufficient**: Typst silently downscales any image wider than the column to fit the container — no warning, no error — so an over-wide figure still ends up with shrunken text. Check the compiled figure's intrinsic width (the `width="...pt"` attribute of the generated SVG, or the standalone PDF's page width) against the column width, and tighten the canvas geometry (block spacing, widths) until it fits. Never fix an over-wide figure by scaling.
 
 Reference with `@fig:block-diagram`. Compiling figures separately to SVG/PDF keeps the parent paper's build fast.
 
 ## Common Issues
 
-### Arrows penetrate node interiors
+### Figure text smaller than the paper's body text
 
-Always connect to anchors (`"a.east"`, `"b.north"`), not to the node's *center*. Targeting `"a"` alone draws to the center, and the line vanishes inside the rectangle's fill.
+Cause: a hardcoded `#set text(size: ...)` that differs from the paper's body size, absolute pt sizes on labels, shrink-on-include (`image(..., width: 80%)`), or an over-wide figure silently auto-shrunk to the column — Typst downscales images wider than the container even without `width:`. Fix: copy the base size from the paper, use `em` units for the internal hierarchy, include the image without `width:`, and verify the figure's intrinsic width fits the column (removing `width:` alone does not prevent auto-shrink).
+
+### Arrows attach to the wrong side
+
+Element-name endpoints (`line("a", "b")`) are auto-clipped to the shapes' borders in cetz — the line does not vanish into the fill. Still, prefer explicit anchors (`"a.east"`, `"b.west"`): the border-intersection point follows the line's direction, so in multi-segment routes it can attach to an unintended side.
 
 ### Overlapping labels and lines
 

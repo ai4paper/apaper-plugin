@@ -4,7 +4,9 @@
 
 #set page(width: auto, height: auto, margin: 2mm)
 // Pick a sans font that matches the host paper; default Typst font used here.
-#set text(size: 9pt)
+// 10pt = the host paper's body text size — copy it from the paper's
+// #set text(size: ...) and keep the two in sync.
+#set text(size: 10pt)
 
 // Grayscale palette
 #let fig-dark  = luma(25%)
@@ -40,7 +42,7 @@
 
   let sum(name, pos) = {
     circle(pos, radius: 0.28cm, fill: white, name: name)
-    content(pos, text(size: 8pt, $Sigma$))
+    content(pos, text(size: 0.7em, $Sigma$))
   }
 
   let arrow(from, to) = line(from, to,
@@ -50,12 +52,12 @@
   // Main signal path
   terminal("ref", (0, 0), $r(t)$)
   sum("sum", (1.5, 0))
-  block("ctrl", (3.5, 0), [Controller $C(s)$])
-  block("plant", (6.3, 0), [Plant $G(s)$])
-  terminal("out", (8.7, 0), $y(t)$)
+  block("ctrl", (3.7, 0), [Controller $C(s)$], width: 2.8cm)
+  block("plant", (6.7, 0), [Plant $G(s)$], width: 2.3cm)
+  terminal("out", (9.3, 0), $y(t)$)
 
   // Feedback sensor
-  block("sensor", (4.9, -1.6), [Sensor $H(s)$])
+  block("sensor", (5.2, -1.6), [Sensor $H(s)$], width: 2.4cm)
 
   // Forward path
   arrow("ref.east", "sum.west")
@@ -80,7 +82,7 @@
   //  "+" annotates the r(t) -> Sum arrow (above the line, near Sum)
   //  "-" annotates the feedback arrow entering Sum from below (left of arrow)
   let sign-box(body) = box(fill: white, inset: (x: 1pt, y: 0pt),
-    text(size: 7pt, body))
+    text(size: 0.7em, body))
   content(("ref.east", 65%, "sum.west"),
     anchor: "south", padding: 3pt,
     sign-box([$+$]))

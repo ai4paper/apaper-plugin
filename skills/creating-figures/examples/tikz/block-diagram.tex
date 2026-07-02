@@ -1,6 +1,7 @@
 % Block Diagram Example: PID Control System with Feedback
 % Compile with: pdflatex block-diagram.tex
-\documentclass[tikz,border=2mm]{standalone}
+% 10pt = the host paper's base font size — copy it from the paper.
+\documentclass[tikz,border=2mm,10pt]{standalone}
 
 \usetikzlibrary{arrows.meta,positioning,calc}
 
@@ -13,12 +14,12 @@
   block/.style={
     rectangle, draw=figdark, fill=figlight,
     minimum width=2cm, minimum height=0.8cm,
-    text centered, font=\small\sffamily
+    align=center, font=\sffamily  % no size command: inherits body size
   },
   terminal/.style={
     rectangle, draw=figdark, fill=white,
     minimum width=1.2cm, minimum height=0.6cm,
-    text centered, font=\small\sffamily
+    align=center, font=\sffamily
   },
   sum/.style={
     circle, draw=figdark, fill=white,
@@ -47,8 +48,9 @@
   \draw[arrow] (ctrl) -- (plant);
   \draw[arrow] (plant) -- (out);
 
-  % Feedback loop
+  % Feedback loop. A filled dot marks the tap junction on the wire.
   \coordinate (fb) at ($(plant.east)!0.5!(out.west)$);
+  \fill[figdark] (fb) circle (1.2pt);
   \draw[thick, draw=figdark] (fb) |- (sensor.east);
   \draw[arrow] (sensor.west) -| (sum.south)
     node[pos=0.95, left, font=\scriptsize] {$-$};
