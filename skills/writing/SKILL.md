@@ -34,9 +34,9 @@ The writing rules are split by concern. Always apply [PRINCIPLES.md](PRINCIPLES.
 | File                           | When to apply                                                                                                            |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
 | [PRINCIPLES.md](PRINCIPLES.md) | Always. Core prose principles, sentence flow, editing heuristics, safeguards, and self-review.                          |
-| [JOURNAL.md](JOURNAL.md)       | Journal or IEEE-style manuscripts — even if the user never says "IEEE." Venue tone, section templates, structure checks. |
+| [JOURNAL.md](JOURNAL.md)       | Journal or IEEE-style manuscripts — even if the user never says "IEEE." Venue tone, section and contribution-list templates, writing about figures/tables/equations, structure checks. |
 | [THEOREMS.md](THEOREMS.md)     | Polishing the formal statement of a theorem, lemma, or proposition — the cited block, not its proof. Statement structure, ordering, and notation. |
-| [LATEX.md](LATEX.md)           | The user is editing a LaTeX manuscript or `*.bib` file. LaTeX and BibTeX conventions.                                    |
+| [LATEX.md](LATEX.md)           | The user is editing a LaTeX manuscript or `*.bib` file. LaTeX and BibTeX conventions, including figure, table, and equation typesetting and automatic numbering. |
 
 ### Detecting journal / IEEE work
 
