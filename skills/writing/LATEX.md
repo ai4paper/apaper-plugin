@@ -26,6 +26,7 @@ minimal cleanup.
 - Define reusable dimensions with `\newlength`/`\setlength` in the preamble — e.g. a shared subfigure width — and size `\includegraphics` from them instead of repeating magic numbers, so the whole paper's figure sizing changes in one place.
 - Distribute subfigures and their gaps with `\hfill`, not fixed `\hspace{...}`; `\hfill` adapts to the column width and spreads the space evenly.
 - Write `\caption{}` as one complete, self-contained phrase or sentence, without an interior full stop that breaks it into fragments.
+- Audit every caption at once by temporarily placing `\listoffigures` and `\listoftables` before the introduction; read together, they expose captions whose keywords drift from the artifact's real content, name the wrong subject, or sit in an illogical order. Remove both lists before submission.
 
 ### Tables
 

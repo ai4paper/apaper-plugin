@@ -5,7 +5,7 @@ style, section templates, and structure checks, see [JOURNAL.md](JOURNAL.md). Fo
 and BibTeX conventions, see [LATEX.md](LATEX.md). For polishing the formal statement of a
 theorem, lemma, or proposition, see [THEOREMS.md](THEOREMS.md).
 
-Three tests underlie every rule here: is the writing **concise** (no wasted words), **clear** (one meaning, easy to follow), and **well-formed** (clean structure, correct usage, tidy on the page)? When a choice is unclear, pick the option that best satisfies all three.
+Three tests underlie every rule here: is the writing **concise** (no wasted words), **clear** (one meaning, easy to follow), and **well-formed** (clean structure, correct usage, tidy on the page)? When a choice is unclear, pick the option that best satisfies all three. Judge a construction on these tests alone, never on where you saw it — careless formatting appears in top journals and conferences too, so publication is not evidence of correctness.
 
 ## Preserve Meaning and Integrity
 
@@ -35,10 +35,11 @@ Lead with the conclusion, then support it.
 - When source notes are background-first, restructure to conclusion-first rather than translating word-for-word.
 - Write the main clause first, then attach time, place, or condition modifiers.
 - Make logical relations explicit with connectives: first/then/finally, however, therefore, moreover, in contrast.
+- Check that a stated relation is true, not merely present — the main clause must actually deliver the goal, cause, or contrast its purpose clause or connective promises. "To alleviate these issues, existing methods can be divided into two categories" is grammatical but false, since classifying methods alleviates nothing; name the action the goal governs and subordinate the rest: "To alleviate these issues, various methods have been proposed, which can be broadly divided into two categories."
 
 ## Guide With Structure, Not Cross-References
 
-Lean on logical continuity and demonstratives — "this bound," "the previous estimate" — before an explicit back-reference. Refer to a specific earlier equation, figure, or result only when the reader genuinely must jump to it; every cross-reference the reader does not need is added reading distance. In a full paper this is reinforced by structure: the section and subsection order is conventional and already previewed in the introduction's roadmap, so a well-organized argument rarely needs to point backward.
+Lean on logical continuity and demonstratives — "this bound," "the previous estimate" — before an explicit back-reference. Refer to a specific earlier equation, figure, or result only when the reader genuinely must jump to it; every cross-reference the reader does not need is added reading distance. In a full paper this is reinforced by structure: the section and subsection order is conventional and already previewed in the introduction's roadmap, so a well-organized argument rarely needs to point backward. When you do point back, let the determiner carry the emphasis: `these` names the specific objects just discussed, `such` selects whatever objects meet the stated conditions, and `the` names the already-defined object itself.
 
 ## Keep Claims Proportional
 
