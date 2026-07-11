@@ -84,7 +84,7 @@ Add `--global` to install into `~/.config/opencode` instead of the current
 project, or use an ephemeral registry without configuring it:
 
 ```bash
-ocx add apaper --from https://ai4paper.github.io/apaper-plugin
+ocx add apaper/apaper --from https://ai4paper.github.io/apaper-plugin
 ```
 
 ## Install for Codex
