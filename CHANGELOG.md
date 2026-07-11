@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- OpenCode: Added OCX support — `registry.jsonc` manifest exposing `writing`, `creating-figures`, `apaper-mcp`, and the all-in-one `apaper` bundle; `scripts/build-registry.sh` stages root `skills/` into the OCX layout and builds with `ocx build`; `.github/workflows/registry.yml` publishes the registry to GitHub Pages; release tooling now also guards the `registry.jsonc` version. Install with `ocx registry add https://ai4paper.github.io/apaper-plugin --name apaper && ocx add apaper/apaper`. (@isomoes)
+## [0.2.0] - 2026-07-11
+
+- OpenCode: Added OCX support — `registry.jsonc` manifest exposing `writing`, `creating-figures`, `apaper-mcp`, and the all-in-one `apaper` bundle; `scripts/build-registry.sh` stages root `skills/` into the OCX layout and builds with `ocx build`; `.github/workflows/registry.yml` publishes the registry to GitHub Pages; release tooling now also guards the `registry.jsonc` version. Install with `ocx registry add https://ai4paper.github.io/apaper-plugin --name apaper && ocx add apaper/apaper`. (@isomoes) 33b5fb9
+- Skills: Expanded the `writing` skill with memo guidance from issue #2 — LaTeX typesetting and prose rules across `PRINCIPLES.md`, `JOURNAL.md`, and `LATEX.md`. (@isomoes) 522b355
+- Skills: Improved font size and scaling guidance in the `creating-figures` skill across `TIKZ.md`, `TYPST.md`, and the worked examples. (@isomoes) 8b673b9
 
 ## [0.1.3] - 2026-07-01
 
