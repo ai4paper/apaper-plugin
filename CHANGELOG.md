@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- OpenCode: Added OCX support — `registry.jsonc` manifest exposing `writing`, `creating-figures`, `apaper-mcp`, and the all-in-one `apaper` bundle; `scripts/build-registry.sh` stages root `skills/` into the OCX layout and builds with `ocx build`; `.github/workflows/registry.yml` publishes the registry to GitHub Pages; release tooling now also guards the `registry.jsonc` version. Install with `ocx registry add https://ai4paper.github.io/apaper-plugin --name apaper && ocx add apaper/apaper`. (@isomoes)
+
 ## [0.1.3] - 2026-07-01
 
 - Skills: Added `THEOREMS.md` to the writing skill — guidance for polishing formal theorem, lemma, and proposition statements (eight statement rules, existence-first ordering, theorem-specific LaTeX notation, a worked before/after example, and a reusable polishing prompt), wired into the router and cross-linked from the other rule files. (@isomoes) 261cfcb

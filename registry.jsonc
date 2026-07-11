@@ -1,0 +1,64 @@
+{
+	// OCX registry manifest for apaper-plugin.
+	// Source files live in skills/ at the repo root (shared with the Claude
+	// Code plugin). scripts/build-registry.sh stages them into the files/
+	// layout that `ocx build` expects, so paths below are files/-relative.
+	//
+	// Schema reference: https://ocx.kdco.dev/schemas/v2/registry.json
+	// Documentation: https://ocx.kdco.dev/docs/registries/create
+
+	"$schema": "https://ocx.kdco.dev/schemas/v2/registry.json",
+	"name": "apaper",
+	"version": "0.1.3",
+	"author": "ai4paper",
+
+	"components": [
+		{
+			"name": "writing",
+			"type": "skill",
+			"description": "Revise and strengthen academic prose for papers; applies IEEE journal rules for journal work and statement rules for theorems.",
+			"files": [
+				"skills/writing/SKILL.md",
+				"skills/writing/PRINCIPLES.md",
+				"skills/writing/JOURNAL.md",
+				"skills/writing/THEOREMS.md",
+				"skills/writing/LATEX.md"
+			]
+		},
+		{
+			"name": "creating-figures",
+			"type": "skill",
+			"description": "Create publication-quality scientific figures: TikZ for .tex papers, CeTZ for .typ papers, with a mandatory render-and-verify loop.",
+			"files": [
+				"skills/creating-figures/SKILL.md",
+				"skills/creating-figures/PRINCIPLES.md",
+				"skills/creating-figures/TIKZ.md",
+				"skills/creating-figures/TYPST.md",
+				"skills/creating-figures/examples/tikz/block-diagram.tex",
+				"skills/creating-figures/examples/typst/block-diagram.typ"
+			]
+		},
+		{
+			"name": "apaper-mcp",
+			"type": "bundle",
+			"description": "Registers the @ai4paper/apaper-mcp paper-research MCP server (IACR / DBLP / Google Scholar / arXiv search, BibTeX collection, paper downloads) in opencode.json.",
+			"files": [],
+			"opencode": {
+				"mcp": {
+					"apaper-mcp": {
+						"type": "local",
+						"command": ["npx", "-y", "@ai4paper/apaper-mcp"],
+						"enabled": true
+					}
+				}
+			}
+		},
+		{
+			"name": "apaper",
+			"type": "bundle",
+			"description": "Full academic paper-authoring toolkit: writing and creating-figures skills plus the apaper-mcp paper-research server.",
+			"files": [],
+			"dependencies": ["writing", "creating-figures", "apaper-mcp"]
+		}
+	]
+}

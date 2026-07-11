@@ -6,8 +6,9 @@ paper-research MCP server so a single setup gives your agent everything it
 needs to search the literature, draft IEEE-style prose, and generate publication-
 quality figures.
 
-Install it as a [Claude Code](https://code.claude.com/) plugin, or add the
-skills and MCP server to [OpenAI Codex](https://developers.openai.com/codex/)
+Install it as a [Claude Code](https://code.claude.com/) plugin, install it
+into [OpenCode](https://opencode.ai) via [OCX](https://github.com/kdcokenny/ocx),
+or add the skills and MCP server to [OpenAI Codex](https://developers.openai.com/codex/)
 (or any other agent supported by the [`skills`](https://github.com/vercel-labs/skills)
 CLI).
 
@@ -29,6 +30,12 @@ which exposes tools for searching IACR / DBLP / Google Scholar / arXiv,
 collecting BibTeX entries, and downloading papers. The server is launched on
 demand via `npx -y @ai4paper/apaper-mcp`, so no global install is needed.
 
+### OCX registry (`registry.jsonc`)
+
+An [OCX](https://github.com/kdcokenny/ocx) registry manifest exposing the
+skills and MCP server as installable components for OpenCode. The built
+registry is published to GitHub Pages by `.github/workflows/registry.yml`.
+
 ## Install for Claude Code
 
 ### From a marketplace (recommended)
@@ -44,6 +51,41 @@ it as a marketplace and install in two commands:
 The bundled MCP server is registered automatically. Once the plugin is
 enabled, the skills are namespaced under the plugin name, e.g.
 `/apaper-plugin:writing`.
+
+## Install for OpenCode (via OCX)
+
+This repo ships an OCX registry (`registry.jsonc`), published to GitHub Pages
+at `https://ai4paper.github.io/apaper-plugin`. With the
+[`ocx`](https://github.com/kdcokenny/ocx) CLI installed:
+
+```bash
+# One-time setup in your project (skip if you already use ocx)
+ocx init
+
+# Add this registry under the "apaper" alias
+ocx registry add https://ai4paper.github.io/apaper-plugin --name apaper
+
+# Install everything: both skills + the apaper-mcp server
+ocx add apaper/apaper
+```
+
+Skills are copied into `.opencode/skills/` and the MCP server is merged into
+`.opencode/opencode.jsonc` — you own the files and can customize them freely.
+
+You can also install pieces individually:
+
+```bash
+ocx add apaper/writing           # writing skill only
+ocx add apaper/creating-figures  # figures skill only
+ocx add apaper/apaper-mcp        # MCP server config only
+```
+
+Add `--global` to install into `~/.config/opencode` instead of the current
+project, or use an ephemeral registry without configuring it:
+
+```bash
+ocx add apaper --from https://ai4paper.github.io/apaper-plugin
+```
 
 ## Install for Codex
 
@@ -99,6 +141,12 @@ claude --plugin-dir ./apaper-plugin
 
 After editing skills or the manifest, run `/reload-plugins` in Claude
 Code to pick up the changes without restarting.
+
+To build and inspect the OCX registry locally (requires [bun](https://bun.sh)):
+
+```bash
+./scripts/build-registry.sh   # builds to dist/
+```
 
 ## License
 

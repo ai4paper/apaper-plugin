@@ -25,11 +25,12 @@ Do the following in order:
    - the `## [<version>] - <YYYY-MM-DD>` block becomes the GitHub Release
      body, so trim it to release-worthy bullets
 
-2. Bump the plugin version to `<version>` in both manifests:
+2. Bump the plugin version to `<version>` in all three manifests:
    - `.claude-plugin/plugin.json` → `version`
    - `.claude-plugin/marketplace.json` → the `apaper-plugin` entry under
      `plugins[].version`
-   The release workflow refuses to publish if either of these disagrees
+   - `registry.jsonc` → top-level `version` (OCX registry manifest)
+   The release workflow refuses to publish if any of these disagrees
    with the tag.
 
 3. Stage and commit the changes with a release-style message such as
@@ -41,7 +42,8 @@ Do the following in order:
 5. Push the commit and the tag together:
    `git push origin main v<version>`
    The tag push triggers `.github/workflows/release.yml`, which:
-     - verifies `plugin.json` and `marketplace.json` versions match the tag
+     - verifies `plugin.json`, `marketplace.json`, and `registry.jsonc`
+       versions match the tag
      - extracts the matching `## [<version>]` block from `CHANGELOG.md`
      - creates a GitHub Release named `Release v<version>` with that body
 
