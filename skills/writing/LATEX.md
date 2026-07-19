@@ -24,6 +24,7 @@ minimal cleanup.
 
 - Set `\graphicspath{{figures/}}` once in the preamble; then `\includegraphics{plot}` needs only the base filename, with no extension. `graphicx` resolves the directory and picks the right extension (`.pdf`/`.png`/`.jpg`) for the current engine, so the source survives a format or engine switch.
 - Define reusable dimensions with `\newlength`/`\setlength` in the preamble — e.g. a shared subfigure width — and size `\includegraphics` from them instead of repeating magic numbers, so the whole paper's figure sizing changes in one place.
+- When a width must be given at all, express it in `\linewidth`, not `\textwidth`: `\textwidth` is the text block's width, a global constant, while `\linewidth` is the width available in the current environment, a local variable — inside a `0.40\textwidth` minipage, `\linewidth` is the minipage's width. So a graphic filling its minipage is `width=\linewidth`, and length registers are set from `\linewidth`; widths hung on the global constant cannot adapt when the enclosing environment or column changes.
 - Distribute subfigures and their gaps with `\hfill`, not fixed `\hspace{...}`; `\hfill` adapts to the column width and spreads the space evenly.
 - Write `\caption{}` as one complete, self-contained phrase or sentence, without an interior full stop that breaks it into fragments.
 - Audit every caption at once by temporarily placing `\listoffigures` and `\listoftables` before the introduction; read together, they expose captions whose keywords drift from the artifact's real content, name the wrong subject, or sit in an illogical order. Remove both lists before submission.
@@ -31,6 +32,7 @@ minimal cleanup.
 ### Tables
 
 - Fit a wide table by narrowing it honestly — tighten `\setlength{\tabcolsep}{...}`, abbreviate or restructure the columns, or split the table — not by wrapping it in `\resizebox{\linewidth}{!}{...}` or dropping to `\tiny`. (`\renewcommand{\arraystretch}{...}` sets row height and `booktabs` gives clean horizontal rules; use them for vertical compactness and a tidy look, not to reclaim width.) A rescaled or shrunk table reads as a typesetting failure; the target is a naturally sized `table` with a proper `\caption{}` and `\label{}`.
+- Write a run of identical columns with the repetition form: `l*{7}{c}` — one left-aligned column, then the centered column type repeated seven times — is equivalent to `lccccccc`, but stays countable and editable as columns are added or removed.
 
 ## BibTeX
 
