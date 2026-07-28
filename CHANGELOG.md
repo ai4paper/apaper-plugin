@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-07-28
+
+- OpenCode: Switched the generated `apaper-mcp` configuration from the npm package to the Python package via `uvx`, and documented the generated configuration. (@isomoes) 6e52d16
+- OpenCode: Fixed the one-shot OCX install command to use the full `apaper/apaper` package path. (@isomoes) a9f100e
+- Skills: Added LaTeX guidance for environment-relative `\linewidth` sizing and repeated table-column specifications. (@isomoes) 181068e
+
 ## [0.2.0] - 2026-07-11
 
 - OpenCode: Added OCX support — `registry.jsonc` manifest exposing `writing`, `creating-figures`, `apaper-mcp`, and the all-in-one `apaper` bundle; `scripts/build-registry.sh` stages root `skills/` into the OCX layout and builds with `ocx build`; `.github/workflows/registry.yml` publishes the registry to GitHub Pages; release tooling now also guards the `registry.jsonc` version. Install with `ocx registry add https://ai4paper.github.io/apaper-plugin --name apaper && ocx add apaper/apaper`. (@isomoes) 33b5fb9
