@@ -71,6 +71,16 @@ ocx add apaper/apaper
 
 Skills are copied into `.opencode/skills/` and the MCP server is merged into
 `.opencode/opencode.jsonc` — you own the files and can customize them freely.
+The generated MCP configuration runs the server from its Python package via
+[`uvx`](https://docs.astral.sh/uv/guides/tools/):
+
+```json
+"apaper-mcp": {
+  "type": "local",
+  "command": ["uvx", "apaper-mcp"],
+  "enabled": true
+}
+```
 
 You can also install pieces individually:
 

@@ -41,13 +41,13 @@
 		{
 			"name": "apaper-mcp",
 			"type": "bundle",
-			"description": "Registers the @ai4paper/apaper-mcp paper-research MCP server (IACR / DBLP / Google Scholar / arXiv search, BibTeX collection, paper downloads) in opencode.json.",
+			"description": "Registers the apaper-mcp paper-research MCP server (IACR / DBLP / Google Scholar / arXiv search, BibTeX collection, paper downloads) in opencode.json.",
 			"files": [],
 			"opencode": {
 				"mcp": {
 					"apaper-mcp": {
 						"type": "local",
-						"command": ["npx", "-y", "@ai4paper/apaper-mcp"],
+						"command": ["uvx", "apaper-mcp"],
 						"enabled": true
 					}
 				}
