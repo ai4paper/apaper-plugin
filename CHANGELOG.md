@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-08-05
+
+- OpenCode: Replaced the OCX distribution with a standalone TypeScript npm plugin that bundles both skills, registers the Python `apaper-mcp` server through `uvx`, and publishes through GitHub OIDC. (@isomoes) d206f76
+- OpenCode: Exposed the required npm `./server` entrypoint, added installer regression coverage, and removed npmmirror URLs from the lockfile. (@isomoes) 25e9470
+
 ## [0.2.1] - 2026-07-28
 
 - OpenCode: Switched the generated `apaper-mcp` configuration from the npm package to the Python package via `uvx`, and documented the generated configuration. (@isomoes) 6e52d16
