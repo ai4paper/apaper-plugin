@@ -1,12 +1,23 @@
 import type { Config, PluginInput } from "@opencode-ai/plugin";
 import assert from "node:assert/strict";
-import { access } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import plugin from "../dist/index.js";
 
 const expectedSkillsPath = fileURLToPath(new URL("../skills", import.meta.url));
+
+test("exposes an OpenCode server entrypoint", async () => {
+  const manifest = JSON.parse(
+    await readFile(new URL("../package.json", import.meta.url), "utf8"),
+  );
+
+  assert.deepEqual(manifest.exports["./server"], {
+    types: "./dist/index.d.ts",
+    import: "./dist/index.js",
+  });
+});
 
 test("registers packaged skills and the Python MCP server", async () => {
   const hooks = await plugin({} as PluginInput);

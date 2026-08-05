@@ -1,11 +1,18 @@
 {
   "name": "@ai4paper/apaper-plugin",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Academic paper authoring plugin for OpenCode and Claude Code.",
   "type": "module",
+  "main": "./dist/index.js",
   "exports": {
-    "types": "./dist/index.d.ts",
-    "default": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
   "files": [
     "dist",
