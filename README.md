@@ -6,9 +6,9 @@ paper-research MCP server so a single setup gives your agent everything it
 needs to search the literature, draft IEEE-style prose, and generate publication-
 quality figures.
 
-Install it as a [Claude Code](https://code.claude.com/) plugin, install it
-into [OpenCode](https://opencode.ai) via [OCX](https://github.com/kdcokenny/ocx),
-or add the skills and MCP server to [OpenAI Codex](https://developers.openai.com/codex/)
+Install it as a [Claude Code](https://code.claude.com/) plugin, load the
+standalone npm plugin in [OpenCode](https://opencode.ai), or add the skills
+and MCP server to [OpenAI Codex](https://developers.openai.com/codex/)
 (or any other agent supported by the [`skills`](https://github.com/vercel-labs/skills)
 CLI).
 
@@ -30,11 +30,12 @@ which exposes tools for searching IACR / DBLP / Google Scholar / arXiv,
 collecting BibTeX entries, and downloading papers. The server is launched on
 demand via `npx -y @ai4paper/apaper-mcp`, so no global install is needed.
 
-### OCX registry (`registry.jsonc`)
+### OpenCode plugin (`index.ts`)
 
-An [OCX](https://github.com/kdcokenny/ocx) registry manifest exposing the
-skills and MCP server as installable components for OpenCode. The built
-registry is published to GitHub Pages by `.github/workflows/registry.yml`.
+The npm package exports an OpenCode plugin that registers the packaged skills
+and the Python `apaper-mcp` server automatically. The MCP server runs through
+[`uvx`](https://docs.astral.sh/uv/guides/tools/), so it stays independently
+updated without being reimplemented in JavaScript.
 
 ## Install for Claude Code
 
@@ -52,50 +53,29 @@ The bundled MCP server is registered automatically. Once the plugin is
 enabled, the skills are namespaced under the plugin name, e.g.
 `/apaper-plugin:writing`.
 
-## Install for OpenCode (via OCX)
+## Install for OpenCode
 
-This repo ships an OCX registry (`registry.jsonc`), published to GitHub Pages
-at `https://ai4paper.github.io/apaper-plugin`. With the
-[`ocx`](https://github.com/kdcokenny/ocx) CLI installed:
+Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/) so the
+plugin can launch the Python MCP server, then install the npm plugin:
 
 ```bash
-# One-time setup in your project (skip if you already use ocx)
-ocx init
-
-# Add this registry under the "apaper" alias
-ocx registry add https://ai4paper.github.io/apaper-plugin --name apaper
-
-# Install everything: both skills + the apaper-mcp server
-ocx add apaper/apaper
+opencode plugin @ai4paper/apaper-plugin
 ```
 
-Skills are copied into `.opencode/skills/` and the MCP server is merged into
-`.opencode/opencode.jsonc` — you own the files and can customize them freely.
-The generated MCP configuration runs the server from its Python package via
-[`uvx`](https://docs.astral.sh/uv/guides/tools/):
+Alternatively, add it directly to `opencode.json` or `opencode.jsonc`:
 
-```json
-"apaper-mcp": {
-  "type": "local",
-  "command": ["uvx", "apaper-mcp"],
-  "enabled": true
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["@ai4paper/apaper-plugin"]
 }
 ```
 
-You can also install pieces individually:
-
-```bash
-ocx add apaper/writing           # writing skill only
-ocx add apaper/creating-figures  # figures skill only
-ocx add apaper/apaper-mcp        # MCP server config only
-```
-
-Add `--global` to install into `~/.config/opencode` instead of the current
-project, or use an ephemeral registry without configuring it:
-
-```bash
-ocx add apaper/apaper --from https://ai4paper.github.io/apaper-plugin
-```
+OpenCode loads both bundled skills directly from the npm package. The plugin
+also registers `apaper-mcp` with the command
+`uvx apaper-mcp`. An existing `mcp.apaper-mcp` configuration is preserved, so
+you can override or disable the server in your own config. Restart OpenCode
+after changing the plugin configuration.
 
 ## Install for Codex
 
@@ -152,11 +132,18 @@ claude --plugin-dir ./apaper-plugin
 After editing skills or the manifest, run `/reload-plugins` in Claude
 Code to pick up the changes without restarting.
 
-To build and inspect the OCX registry locally (requires [bun](https://bun.sh)):
+Run the OpenCode plugin tests and inspect the npm package contents with:
 
 ```bash
-./scripts/build-registry.sh   # builds to dist/
+npm ci
+npm run typecheck
+npm test
+npm run pack:check
 ```
+
+Release publishing uses npm trusted publishing through GitHub OIDC. See
+[`prompt/release.md`](./prompt/release.md) for the first manual publish and
+subsequent tag-release process.
 
 ## License
 

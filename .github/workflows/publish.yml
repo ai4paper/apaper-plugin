@@ -1,0 +1,70 @@
+# Publish the OpenCode npm plugin when a vX.Y.Z tag is pushed.
+#
+# Authentication uses npm trusted publishing through OIDC, with no NPM_TOKEN.
+# After the first manual publish, configure npmjs.com trusted publishing with:
+#   Package    : @ai4paper/apaper-plugin
+#   Repository : ai4paper/apaper-plugin
+#   Workflow   : .github/workflows/publish.yml
+#   Environment: (leave blank)
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing requires npm >= 11.5.1.
+      - name: Upgrade npm
+        run: npm install --global npm@latest
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify versions match tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${TAG#v}"
+
+          PLUGIN_VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
+          if [ "$PLUGIN_VERSION" != "$VERSION" ]; then
+            echo "::error::plugin.json version ($PLUGIN_VERSION) does not match tag ($TAG)"
+            exit 1
+          fi
+
+          MARKETPLACE_VERSION=$(jq -r '.plugins[] | select(.name == "apaper-plugin") | .version' .claude-plugin/marketplace.json)
+          if [ "$MARKETPLACE_VERSION" != "$VERSION" ]; then
+            echo "::error::marketplace.json apaper-plugin version ($MARKETPLACE_VERSION) does not match tag ($TAG)"
+            exit 1
+          fi
+
+          PACKAGE_VERSION=$(jq -r '.version' package.json)
+          if [ "$PACKAGE_VERSION" != "$VERSION" ]; then
+            echo "::error::package.json version ($PACKAGE_VERSION) does not match tag ($TAG)"
+            exit 1
+          fi
+
+      - name: Test npm package
+        run: |
+          npm run typecheck
+          npm test
+          npm run pack:check
+
+      - name: Publish
+        run: npm publish --provenance --access public

@@ -1,0 +1,50 @@
+{
+  "name": "@ai4paper/apaper-plugin",
+  "version": "0.2.1",
+  "description": "Academic paper authoring plugin for OpenCode and Claude Code.",
+  "type": "module",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "pretest": "npm run build",
+    "test": "node --test test/*.test.ts",
+    "typecheck": "npm run build && tsc --project tsconfig.test.json",
+    "prepack": "npm run build",
+    "pack:check": "npm pack --dry-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ai4paper/apaper-plugin.git"
+  },
+  "homepage": "https://github.com/ai4paper/apaper-plugin#readme",
+  "bugs": "https://github.com/ai4paper/apaper-plugin/issues",
+  "keywords": [
+    "opencode",
+    "claude-code",
+    "mcp",
+    "academic-writing"
+  ],
+  "author": "ai4paper",
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@opencode-ai/plugin": "^1.18.13",
+    "@types/node": "^24.10.0",
+    "typescript": "^7.0.2"
+  }
+}
