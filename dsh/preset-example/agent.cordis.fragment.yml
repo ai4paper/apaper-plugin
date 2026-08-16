@@ -1,0 +1,8 @@
+# APaper-specific row for a DeepSeek Harness agent preset.
+#
+# This file is a fragment, not a complete standalone preset. In the Harness
+# GUI, copy the shipped Standard preset and append this row to the copied
+# preset's agent.cordis.yml. Do not edit the shipped preset itself.
+
+- id: apaper-plugin
+  name: '@ai4paper/apaper-plugin/dsh'

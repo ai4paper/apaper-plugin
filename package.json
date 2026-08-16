@@ -1,7 +1,7 @@
 {
   "name": "@ai4paper/apaper-plugin",
   "version": "0.2.2",
-  "description": "Academic paper authoring plugin for OpenCode and Claude Code.",
+  "description": "Academic paper authoring plugin for DeepSeek Harness, OpenCode, Claude Code, and Codex.",
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
@@ -12,10 +12,15 @@
     "./server": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./dsh": {
+      "types": "./dsh/index.d.ts",
+      "import": "./dsh/index.js"
     }
   },
   "files": [
     "dist",
+    "dsh",
     "skills",
     "README.md",
     "LICENSE"
@@ -35,6 +40,7 @@
   "homepage": "https://github.com/ai4paper/apaper-plugin#readme",
   "bugs": "https://github.com/ai4paper/apaper-plugin/issues",
   "keywords": [
+    "deepseek-harness",
     "opencode",
     "claude-code",
     "mcp",
@@ -48,6 +54,9 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-mcp-client": "^0.1.0-rc.6"
   },
   "devDependencies": {
     "@opencode-ai/plugin": "^1.18.13",
