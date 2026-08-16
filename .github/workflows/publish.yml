@@ -12,6 +12,12 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish after a failed tag-triggered run
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -38,7 +44,7 @@ jobs:
 
       - name: Verify versions match tag
         env:
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
         run: |
           VERSION="${TAG#v}"
 
