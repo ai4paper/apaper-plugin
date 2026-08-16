@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-08-16
+
+- DeepSeek Harness: Added a native plugin integration with MCP client wiring, preset examples, documentation, and regression coverage. (@isomoes) 472eced
+
 ## [0.2.2] - 2026-08-05
 
 - OpenCode: Replaced the OCX distribution with a standalone TypeScript npm plugin that bundles both skills, registers the Python `apaper-mcp` server through `uvx`, and publishes through GitHub OIDC. (@isomoes) d206f76

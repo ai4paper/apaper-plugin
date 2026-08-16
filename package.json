@@ -1,6 +1,6 @@
 {
   "name": "@ai4paper/apaper-plugin",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Academic paper authoring plugin for DeepSeek Harness, OpenCode, Claude Code, and Codex.",
   "type": "module",
   "main": "./dist/index.js",
