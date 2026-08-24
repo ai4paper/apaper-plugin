@@ -1,36 +1,23 @@
 {
   "name": "@ai4paper/apaper-plugin",
   "version": "0.2.3",
-  "description": "Academic paper authoring plugin for DeepSeek Harness, OpenCode, Claude Code, and Codex.",
+  "description": "Academic paper authoring plugin for DeepSeek Harness.",
   "type": "module",
-  "main": "./dist/index.js",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./server": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
     "./dsh": {
       "types": "./dsh/index.d.ts",
       "import": "./dsh/index.js"
     }
   },
   "files": [
-    "dist",
     "dsh",
     "skills",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
-    "pretest": "npm run build",
     "test": "node --test test/*.test.ts",
-    "typecheck": "npm run build && tsc --project tsconfig.test.json",
-    "prepack": "npm run build",
+    "typecheck": "tsc --project tsconfig.json",
     "pack:check": "npm pack --dry-run"
   },
   "repository": {
@@ -41,8 +28,7 @@
   "bugs": "https://github.com/ai4paper/apaper-plugin/issues",
   "keywords": [
     "deepseek-harness",
-    "opencode",
-    "claude-code",
+    "dsh-plugin",
     "mcp",
     "academic-writing"
   ],
@@ -59,7 +45,6 @@
     "@deepseek-ai/dsh-mcp-client": "^0.1.0-rc.6"
   },
   "devDependencies": {
-    "@opencode-ai/plugin": "^1.18.13",
     "@types/node": "^24.10.0",
     "typescript": "^7.0.2"
   }

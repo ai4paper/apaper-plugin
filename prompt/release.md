@@ -2,7 +2,7 @@
 
 Use this prompt when preparing a release for `apaper-plugin`. Pushing a
 `v*` tag triggers `.github/workflows/publish.yml`, which verifies the version
-files and publishes the OpenCode plugin to npm. A successful publish then
+files and publishes the DSH plugin package to npm. A successful publish then
 triggers `.github/workflows/release.yml` to create the GitHub Release from
 `CHANGELOG.md`.
 
@@ -50,13 +50,8 @@ Do the following in order:
    - the `## [<version>] - <YYYY-MM-DD>` block becomes the GitHub Release
      body, so trim it to release-worthy bullets
 
-2. Bump the plugin version to `<version>` in all three manifests:
-   - `.claude-plugin/plugin.json` → `version`
-   - `.claude-plugin/marketplace.json` → the `apaper-plugin` entry under
-     `plugins[].version`
-   - `package.json` → top-level `version` (OpenCode npm plugin)
-   The release workflow refuses to publish if any of these disagrees
-   with the tag.
+2. Bump the top-level `version` in `package.json` to `<version>`.
+   The release workflow refuses to publish if it disagrees with the tag.
 
 3. Stage and commit the changes with a release-style message such as
    `release: v<version>`. Do NOT create the tag in the same commit.
@@ -67,8 +62,7 @@ Do the following in order:
 5. Push the commit and the tag together:
    `git push origin main v<version>`
    The tag push triggers `.github/workflows/publish.yml`, which:
-     - verifies `plugin.json`, `marketplace.json`, and `package.json`
-       versions match the tag
+     - verifies the `package.json` version matches the tag
      - tests and publishes `@ai4paper/apaper-plugin` to npm
    A successful publish triggers `.github/workflows/release.yml`, which:
      - extracts the matching `## [<version>]` block from `CHANGELOG.md`

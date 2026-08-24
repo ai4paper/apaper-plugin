@@ -1,4 +1,4 @@
-# Publish the OpenCode npm plugin when a vX.Y.Z tag is pushed.
+# Publish the DeepSeek Harness plugin when a vX.Y.Z tag is pushed.
 #
 # Authentication uses npm trusted publishing through OIDC, with no NPM_TOKEN.
 # After the first manual publish, configure npmjs.com trusted publishing with:
@@ -47,18 +47,6 @@ jobs:
           TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
         run: |
           VERSION="${TAG#v}"
-
-          PLUGIN_VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
-          if [ "$PLUGIN_VERSION" != "$VERSION" ]; then
-            echo "::error::plugin.json version ($PLUGIN_VERSION) does not match tag ($TAG)"
-            exit 1
-          fi
-
-          MARKETPLACE_VERSION=$(jq -r '.plugins[] | select(.name == "apaper-plugin") | .version' .claude-plugin/marketplace.json)
-          if [ "$MARKETPLACE_VERSION" != "$VERSION" ]; then
-            echo "::error::marketplace.json apaper-plugin version ($MARKETPLACE_VERSION) does not match tag ($TAG)"
-            exit 1
-          fi
 
           PACKAGE_VERSION=$(jq -r '.version' package.json)
           if [ "$PACKAGE_VERSION" != "$VERSION" ]; then
