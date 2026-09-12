@@ -13,20 +13,22 @@ Usage: bash install.sh [--client CLIENT[,CLIENT...]] [--repo PATH]
 Clients: claude-code (aliases: claude, claudecode), codex, opencode, all
 Repeat --client or use commas to select multiple clients.
 Omitted options are prompted in a terminal. Non-interactive use requires
-both --client and --repo. Existing MCP entries are preserved; changed files
+both --client and --repo. Custom MCP entries are preserved; the old default
+npx launcher migrates to uvx. Changed files
 are backed up under <repo>/.apaper-backups/.
 
 A standalone script downloads the toolkit from GitHub into a temporary
 folder and removes it after installation. APAPER_REF selects a branch, tag,
 or commit (default: main). A complete local checkout uses its own files.
-Requires Node.js 20+, npm/npx, Bash, and (for downloads) curl and tar.
+Installer: Node.js 20+, npm, Bash, and (for downloads) curl and tar.
+MCP server: uv/uvx and Python 3.12+.
 HELP
       return
     fi
   done
 
   if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
-    echo "APaper requires Node.js 20+ and npm (including npx)." >&2
+    echo "The APaper installer requires Node.js 20+ and npm." >&2
     return 1
   fi
   node -e 'if (Number(process.versions.node.split(".")[0]) < 20) { console.error("APaper requires Node.js 20+."); process.exit(1); }'

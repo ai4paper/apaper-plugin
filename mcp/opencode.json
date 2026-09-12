@@ -3,7 +3,7 @@
   "mcp": {
     "apaper-mcp": {
       "type": "local",
-      "command": ["npx", "-y", "@ai4paper/apaper-mcp"],
+      "command": ["uvx", "apaper-mcp"],
       "enabled": true
     }
   }

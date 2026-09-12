@@ -14,8 +14,9 @@ The skills are sourced from [`isomoes/skills`](https://github.com/isomoes/skills
 
 ## Install
 
-Requires **Node.js 20+**, **npm/npx**, **Bash**, **curl**, and **tar** (Linux,
+The installer requires **Node.js 20+**, **npm**, **Bash**, **curl**, and **tar** (Linux,
 macOS, or WSL). The target repository directory must already exist.
+Running the MCP server requires **uv/uvx** and **Python 3.12+**.
 Download and run the installer directly:
 
 ```bash
@@ -61,8 +62,13 @@ available after this change is pushed to `main`; earlier tags contain the legacy
 DSH plugin. A complete local checkout still supports `./install.sh` and uses its
 own files, installing parser dependencies into that checkout when needed.
 
-The client launches the MCP server on demand with
-`npx -y @ai4paper/apaper-mcp`; first use requires access to the npm registry.
+The client launches the maintained Python MCP server on demand with
+`uvx apaper-mcp`; first use requires access to PyPI. Make sure `uvx` is on the
+client's `PATH`. Node.js/npm are used for this toolkit's installer.
+For IACR PDF downloads, upstream also requires Chromium on `PATH` or Scrapling's
+browser runtime (`uvx --from 'scrapling[fetchers]' scrapling install`). Upstream
+recommends 15-minute OpenCode timeouts for those browser-assisted downloads;
+see its [runtime and MCP setup instructions](https://github.com/ai4paper/apaper-mcp#install-from-pypi).
 Figure compilation needs the relevant LaTeX or Typst tools described in the skill.
 
 The npm distribution also exposes the same installer as `apaper-install`:
@@ -90,9 +96,12 @@ usable after moving or removing the toolkit checkout. Global client settings
 are untouched.
 
 The installer adds the `apaper-mcp` entry while keeping other servers and
-settings. An existing `apaper-mcp` entry is left as configured, including custom
-environment variables, versions, or disabled status. JSONC comments and normal
-TOML formatting are preserved. If Codex uses an inline `mcp_servers` table that
+settings. The previous default `npx -y @ai4paper/apaper-mcp` launcher is migrated
+to `uvx apaper-mcp`, preserving environment variables and other server settings.
+Other existing launch commands, including pinned versions, are left as configured.
+JSONC comments and normal TOML formatting are preserved. Migrating an old Codex
+launcher reserializes its TOML; the original formatting/comments remain in the
+backup. If Codex uses an inline `mcp_servers` table that
 cannot be extended, the installer reserializes the TOML and reports that its
 formatting/comments changed; the original is backed up.
 
@@ -120,8 +129,7 @@ These locations and formats follow the official documentation:
 [`mcp/`](mcp/) contains ready-to-merge client configuration examples. Copy the
 two folders under [`skills/`](skills/) into your client's supported skill
 directory, keeping each folder's `SKILL.md` and supporting files together.
-Any client supporting stdio MCP can launch `npx` with arguments
-`["-y", "@ai4paper/apaper-mcp"]`.
+Any client supporting stdio MCP can launch `uvx` with arguments `["apaper-mcp"]`.
 
 This replaces the native DeepSeek Harness/Cordis packaging. The `./dsh` export,
 DSH preset, and DSH runtime dependency are no longer shipped. Existing DSH users

@@ -37,10 +37,10 @@ for (const [client, config, skills] of [
     const data = client === "codex" ? parseToml(source) : JSON.parse(source);
     const server = data[client === "codex" ? "mcp_servers" : client === "opencode" ? "mcp" : "mcpServers"]["apaper-mcp"];
     if (client === "opencode") {
-      assert.deepEqual(server, { type: "local", command: ["npx", "-y", "@ai4paper/apaper-mcp"], enabled: true });
+      assert.deepEqual(server, { type: "local", command: ["uvx", "apaper-mcp"], enabled: true });
     } else {
-      assert.equal(server.command, "npx");
-      assert.deepEqual(server.args, ["-y", "@ai4paper/apaper-mcp"]);
+      assert.equal(server.command, "uvx");
+      assert.deepEqual(server.args, ["apaper-mcp"]);
     }
     for (const file of ["writing/SKILL.md", "writing/JOURNAL.md", "creating-figures/SKILL.md", "creating-figures/examples/typst/block-diagram.typ"]) {
       assert.equal(await read(repo, `${skills}/${file}`), await read(root, `skills/${file}`));
@@ -104,7 +104,45 @@ test("handles inline TOML tables without losing other settings", async t => {
   await run(repo, ["codex"]);
   const data = parseToml(await read(repo, ".codex/config.toml"));
   assert.equal(data.model, "mine");
-  assert.deepEqual(data.mcp_servers, { existing: { command: "custom" }, "apaper-mcp": { command: "npx", args: ["-y", "@ai4paper/apaper-mcp"] } });
+  assert.deepEqual(data.mcp_servers, { existing: { command: "custom" }, "apaper-mcp": { command: "uvx", args: ["apaper-mcp"] } });
+});
+
+test("migrates legacy npm launchers, preserves settings, and backs up originals", async t => {
+  const repo = await fixture(t);
+  const originals = {
+    ".mcp.json": JSON.stringify({ mcpServers: { "apaper-mcp": { type: "stdio", command: "npx", args: ["-y", "@ai4paper/apaper-mcp"], env: { SPIDER_PROXY: "custom" } }, other: { command: "keep" } } }),
+    ".codex/config.toml": '# local settings\nmodel = "mine"\n[mcp_servers.apaper-mcp]\ncommand = "npx"\nargs = ["-y", "@ai4paper/apaper-mcp"]\nenabled = false\n[mcp_servers.apaper-mcp.env]\nSPIDER_PROXY = "custom"\n',
+    "opencode.jsonc": '{\n// keep this comment\n"mcp":{"apaper-mcp":{"type":"local","command":["npx","-y","@ai4paper/apaper-mcp"],"enabled":false,"timeout":900000,"environment":{"SPIDER_PROXY":"custom"}}}}',
+  };
+  for (const [path, content] of Object.entries(originals)) await put(repo, path, content);
+  await run(repo);
+  const claude = JSON.parse(await read(repo, ".mcp.json"));
+  assert.deepEqual(claude.mcpServers["apaper-mcp"], { type: "stdio", command: "uvx", args: ["apaper-mcp"], env: { SPIDER_PROXY: "custom" } });
+  assert.equal(claude.mcpServers.other.command, "keep");
+  const codex = parseToml(await read(repo, ".codex/config.toml"));
+  assert.equal(codex.model, "mine");
+  assert.deepEqual(codex.mcp_servers, { "apaper-mcp": { command: "uvx", args: ["apaper-mcp"], enabled: false, env: { SPIDER_PROXY: "custom" } } });
+  const opencode = await read(repo, "opencode.jsonc");
+  assert.ok(opencode.includes("// keep this comment"));
+  assert.deepEqual(parseJsonc(opencode).mcp["apaper-mcp"], { type: "local", command: ["uvx", "apaper-mcp"], enabled: false, timeout: 900000, environment: { SPIDER_PROXY: "custom" } });
+  const [backup] = await readdir(join(repo, ".apaper-backups"));
+  for (const [path, content] of Object.entries(originals)) assert.equal(await read(repo, `.apaper-backups/${backup}/${path}`), content);
+  const updated = await Promise.all(Object.keys(originals).map(path => read(repo, path)));
+  await run(repo);
+  assert.deepEqual(await Promise.all(Object.keys(originals).map(path => read(repo, path))), updated);
+  assert.deepEqual(await readdir(join(repo, ".apaper-backups")), [backup]);
+});
+
+test("keeps explicitly pinned npm launchers unchanged", async t => {
+  const repo = await fixture(t);
+  const originals = {
+    ".mcp.json": '{"mcpServers":{"apaper-mcp":{"command":"npx","args":["-y","@ai4paper/apaper-mcp@0.2.0"]}}}',
+    ".codex/config.toml": '[mcp_servers.apaper-mcp]\ncommand = "npx"\nargs = ["-y", "@ai4paper/apaper-mcp@0.2.0"]\n',
+    "opencode.json": '{"mcp":{"apaper-mcp":{"type":"local","command":["npx","-y","@ai4paper/apaper-mcp@0.2.0"]}}}',
+  };
+  for (const [path, content] of Object.entries(originals)) await put(repo, path, content);
+  await run(repo);
+  for (const [path, content] of Object.entries(originals)) assert.equal(await read(repo, path), content);
 });
 
 test("skill updates back up local edits and keep unrelated files", async t => {
@@ -231,7 +269,7 @@ for (const mode of ["downloaded file", "stdin pipe"]) {
       : spawnSync("bash", ["-s", "--", ...args], { cwd: repo, env, input: await read(root, "install.sh"), encoding: "utf8" });
     assert.equal(result.status, 0, result.stderr);
     assert.match(await read(work, "fetch.log"), /https:\/\/codeload.github.com\/ai4paper\/apaper-plugin\/tar.gz\/release%2Ftest/);
-    assert.equal(JSON.parse(await read(repo, ".mcp.json")).mcpServers["apaper-mcp"].command, "npx");
+    assert.equal(JSON.parse(await read(repo, ".mcp.json")).mcpServers["apaper-mcp"].command, "uvx");
     assert.ok(parseToml(await read(repo, ".codex/config.toml")).mcp_servers);
     assert.equal(JSON.parse(await read(repo, "opencode.json")).mcp["apaper-mcp"].enabled, true);
     assert.equal(await read(repo, ".agents/skills/writing/SKILL.md"), await read(root, "skills/writing/SKILL.md"));

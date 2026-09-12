@@ -23,9 +23,11 @@ Repeat --client or use commas to select multiple clients.
 Omitted options are prompted in a terminal; the repository defaults to the
 current directory. Non-interactive use requires both --client and --repo.
 
-Existing MCP entries are preserved. Changed files are backed up under
+Custom MCP entries are preserved; the old default npx launcher migrates to uvx.
+Changed files are backed up under
 <repo>/.apaper-backups/. No global client settings are modified.
-Requires Node.js 20+ and npm/npx. Use Bash on Linux, macOS, or WSL.
+Installer: Node.js 20+ and npm. MCP server: uv/uvx and Python 3.12+.
+Use Bash on Linux, macOS, or WSL.
 `;
 
 function selectClients(values) {
@@ -49,6 +51,14 @@ function object(value, label) {
     throw new Error(`${label} must be an object/table.`);
   }
   return value;
+}
+
+function migrateLegacyLauncher(server, client) {
+  const command = client === "opencode" ? server.command : [server.command, ...(Array.isArray(server.args) ? server.args : [])];
+  if (JSON.stringify(command) !== JSON.stringify(["npx", "-y", "@ai4paper/apaper-mcp"])) return undefined;
+  return client === "opencode"
+    ? { ...server, command: ["uvx", "apaper-mcp"] }
+    : { ...server, command: "uvx", args: ["apaper-mcp"] };
 }
 
 // Refuse symlinks in destination paths so a repo-scoped install stays in the repo.
@@ -115,7 +125,13 @@ export async function install({ repo: target, selected, log = console.log }) {
       const data = parseToml(original);
       const servers = data[client.key] === undefined ? {} : object(data[client.key], config);
       if (Object.hasOwn(servers, "apaper-mcp")) {
-        object(servers["apaper-mcp"], `${config}: apaper-mcp`);
+        const server = object(servers["apaper-mcp"], `${config}: apaper-mcp`);
+        const migrated = migrateLegacyLauncher(server, name);
+        if (migrated) {
+          servers["apaper-mcp"] = migrated;
+          updated = stringifyToml(data);
+          messages.push(`${config}: migrated the default npx launcher to uvx; original TOML formatting is in the backup.`);
+        }
       } else {
         updated = `${original}${original && !original.endsWith("\n") ? "\n" : ""}${original ? "\n" : ""}${template}`;
         try { parseToml(updated); }
@@ -134,7 +150,18 @@ export async function install({ repo: target, selected, log = console.log }) {
       object(data, config);
       const servers = data[client.key] === undefined ? {} : object(data[client.key], config);
       if (Object.hasOwn(servers, "apaper-mcp")) {
-        object(servers["apaper-mcp"], `${config}: apaper-mcp`);
+        const server = object(servers["apaper-mcp"], `${config}: apaper-mcp`);
+        const migrated = migrateLegacyLauncher(server, name);
+        if (migrated) {
+          updated = source;
+          // Edit only launch fields to retain JSONC comments and user settings.
+          for (const key of name === "opencode" ? ["command"] : ["command", "args"]) {
+            updated = applyEdits(updated, modify(updated, [client.key, "apaper-mcp", key], migrated[key], {
+              formattingOptions: { insertSpaces: true, tabSize: 2, eol: original.includes("\r\n") ? "\r\n" : "\n" },
+            }));
+          }
+          messages.push(`${config}: migrated the default npx launcher to uvx.`);
+        }
       } else {
         const settings = JSON.parse(template);
         updated = applyEdits(source, modify(source, [client.key, "apaper-mcp"], settings[client.key]["apaper-mcp"], {
@@ -176,7 +203,7 @@ export async function install({ repo: target, selected, log = console.log }) {
   }
   for (const message of messages) log(message);
   log(`Installed APaper for ${names.join(", ")} in ${repo} (${changes.size} files changed).`);
-  log("Restart your client in this repository. The MCP server runs on demand via npx.");
+  log("Restart your client in this repository. The default MCP command is uvx apaper-mcp (requires uv/uvx and Python 3.12+).");
   if (names.includes("codex")) log("Codex loads project MCP configuration only after you trust the repository.");
   if (names.includes("claude-code")) log("Claude Code may ask you to approve this project's MCP server.");
 }

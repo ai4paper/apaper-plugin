@@ -2,8 +2,8 @@
   "mcpServers": {
     "apaper-mcp": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@ai4paper/apaper-mcp"]
+      "command": "uvx",
+      "args": ["apaper-mcp"]
     }
   }
 }
