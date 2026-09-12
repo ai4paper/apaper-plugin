@@ -2,7 +2,7 @@
 
 Use this prompt when preparing a release for `apaper-plugin`. Pushing a
 `v*` tag triggers `.github/workflows/publish.yml`, which verifies the version
-files and publishes the DSH plugin package to npm. A successful publish then
+files and publishes the MCP configuration and skills toolkit to npm. A successful publish then
 triggers `.github/workflows/release.yml` to create the GitHub Release from
 `CHANGELOG.md`.
 

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Replace native DSH/Cordis packaging with standard MCP templates and Agent Skills for Claude Code, Codex, and OpenCode.
+- Add a repository-scoped `install.sh` with interactive client selection, scriptable options, config merging, and backups of changed files.
+- Support downloading `install.sh` on its own or piping it to Bash; fetch the toolkit from GitHub and clean up temporary files automatically.
+- Publish the same installer as `apaper-install` and cover installation, updates, and config preservation with regression tests.
+
 ## [0.2.3] - 2026-08-16
 
 - DeepSeek Harness: Added a native plugin integration with MCP client wiring, preset examples, documentation, and regression coverage. (@isomoes) 472eced
