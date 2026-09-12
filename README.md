@@ -24,14 +24,15 @@ curl -fsSL https://raw.githubusercontent.com/ai4paper/apaper-plugin/main/install
 bash /tmp/apaper-install.sh
 ```
 
-Choose Claude Code, Codex, OpenCode, or all three, then enter the repository
-path. Multiple client names or numbers can be separated by commas.
-Press Enter at the path prompt to use the current working directory.
+Choose Claude Code, Codex, OpenCode, or all three, then choose all components,
+skills only, or MCPs only and enter the repository path. Multiple client names
+or numbers can be separated by commas. Press Enter at each prompt to install
+**all components for Codex** in the current working directory.
 
 Or install into a specific repository in one command:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ai4paper/apaper-plugin/main/install.sh | bash -s -- --client all --repo /path/to/paper
+curl -fsSL https://raw.githubusercontent.com/ai4paper/apaper-plugin/main/install.sh | bash -s -- --repo /path/to/paper
 ```
 
 Select just the clients you need with the downloaded script:
@@ -44,7 +45,16 @@ bash /tmp/apaper-install.sh --client claude-code,codex --repo "/path/to/my paper
 ```
 
 `claude` and `claudecode` are aliases for `claude-code`. You can also repeat
-`--client`. Non-interactive runs require both `--client` and `--repo`.
+`--client`. The default client is `codex`; `--client all` selects all three clients.
+Use `--only` to select which components to install (default: `all`):
+
+```bash
+bash /tmp/apaper-install.sh --repo /path/to/paper --only skills
+bash /tmp/apaper-install.sh --repo /path/to/paper --only mcps
+```
+
+These choices work with any selected clients. Skills-only installs copy the skills;
+MCPs-only installs configure the MCP server. Non-interactive runs require `--repo`.
 Run `bash /tmp/apaper-install.sh --help` for usage. Piping the script without
 options also supports the interactive picker when a terminal is available.
 

@@ -51,6 +51,43 @@ for (const [client, config, skills] of [
   });
 }
 
+test("CLI defaults to all components for Codex", async t => {
+  const repo = await fixture(t);
+  const result = spawnSync("bash", [shell, "--repo", repo], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  assert.ok(parseToml(await read(repo, ".codex/config.toml")).mcp_servers);
+  assert.equal(await read(repo, ".agents/skills/writing/SKILL.md"), await read(root, "skills/writing/SKILL.md"));
+  assert.deepEqual((await readdir(repo)).sort(), [".agents", ".codex"]);
+});
+
+test("skills-only installs ignore existing invalid MCP configurations", async t => {
+  const repo = await fixture(t);
+  const configs = [".mcp.json", ".codex/config.toml", "opencode.json", "opencode.jsonc"];
+  for (const config of configs) await put(repo, config, "invalid config");
+  const result = spawnSync("bash", [shell, "--repo", repo, "--client", "all", "--only", "skills"], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  for (const config of configs) assert.equal(await read(repo, config), "invalid config");
+  for (const directory of [".agents", ".claude"]) {
+    assert.equal(await read(repo, `${directory}/skills/writing/SKILL.md`), await read(root, "skills/writing/SKILL.md"));
+  }
+  assert.equal((await readdir(repo)).includes(".apaper-backups"), false);
+  assert.doesNotMatch(result.stdout, /uvx|trust|approve/);
+});
+
+test("MCPs-only installs leave skill destinations untouched", async t => {
+  const repo = await fixture(t);
+  await put(repo, ".agents/skills/writing/SKILL.md", "local skill");
+  const result = spawnSync("bash", [shell, "--repo", repo, "--client", "all", "--only", "mcps"], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  assert.ok(parseToml(await read(repo, ".codex/config.toml")).mcp_servers);
+  assert.ok(JSON.parse(await read(repo, ".mcp.json")).mcpServers);
+  assert.ok(JSON.parse(await read(repo, "opencode.json")).mcp);
+  assert.equal(await read(repo, ".agents/skills/writing/SKILL.md"), "local skill");
+  assert.deepEqual(await readdir(join(repo, ".agents/skills")), ["writing"]);
+  assert.equal((await readdir(repo)).includes(".claude"), false);
+  assert.equal((await readdir(repo)).includes(".apaper-backups"), false);
+});
+
 test("all installs are idempotent and share Codex/OpenCode skills", async t => {
   const repo = await fixture(t);
   await run(repo);
@@ -196,7 +233,7 @@ test("refuses destination symlinks without modifying external files", async t =>
 
 test("CLI validates arguments and supports aliases and repeated selections", async t => {
   const repo = await fixture(t);
-  for (const args of [[], ["--client"], ["--client", "bad", "--repo", repo], ["--wat"], ["--client", "all", "--repo", join(repo, "missing")]]) {
+  for (const args of [[], ["--client"], ["--only"], ["--only", "bad", "--repo", repo], ["--client", "bad", "--repo", repo], ["--wat"], ["--client", "all", "--repo", join(repo, "missing")]]) {
     const result = spawnSync("bash", [shell, ...args], { encoding: "utf8" });
     assert.equal(result.status, 1, result.stdout);
     assert.match(result.stderr, /APaper:/);

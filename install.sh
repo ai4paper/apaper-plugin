@@ -9,11 +9,12 @@ apaper_install() {
       cat <<'HELP'
 Install APaper MCP configuration and skills into a repository.
 
-Usage: bash install.sh [--client CLIENT[,CLIENT...]] [--repo PATH]
+Usage: bash install.sh [--client CLIENT[,CLIENT...]] [--only all|skills|mcps] [--repo PATH]
 Clients: claude-code (aliases: claude, claudecode), codex, opencode, all
 Repeat --client or use commas to select multiple clients.
-Omitted options are prompted in a terminal. Non-interactive use requires
-both --client and --repo. Custom MCP entries are preserved; the old default
+Omitted options are prompted in a terminal. Defaults: codex, all components,
+and the current directory. Non-interactive use requires --repo.
+Custom MCP entries are preserved; the old default
 npx launcher migrates to uvx. Changed files
 are backed up under <repo>/.apaper-backups/.
 

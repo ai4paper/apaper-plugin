@@ -15,13 +15,13 @@ const clients = {
 
 const help = `Install APaper MCP configuration and skills into a repository.
 
-Usage: ./install.sh [--client CLIENT[,CLIENT...]] [--repo PATH]
-       apaper-install [--client CLIENT[,CLIENT...]] [--repo PATH]
+Usage: ./install.sh [--client CLIENT[,CLIENT...]] [--only all|skills|mcps] [--repo PATH]
+       apaper-install [--client CLIENT[,CLIENT...]] [--only all|skills|mcps] [--repo PATH]
 
 Clients: claude-code (aliases: claude, claudecode), codex, opencode, all
 Repeat --client or use commas to select multiple clients.
-Omitted options are prompted in a terminal; the repository defaults to the
-current directory. Non-interactive use requires both --client and --repo.
+Omitted options are prompted in a terminal. Defaults: codex, all components,
+and the current directory. Non-interactive use requires --repo.
 
 Custom MCP entries are preserved; the old default npx launcher migrates to uvx.
 Changed files are backed up under
@@ -89,12 +89,21 @@ async function skillFiles(directory, prefix = "") {
   return files;
 }
 
-export async function install({ repo: target, selected, log = console.log }) {
+function selectComponents(value) {
+  const aliases = { "1": "all", "2": "skills", "3": "mcps", mcp: "mcps" };
+  const normalized = value.trim().toLowerCase();
+  const result = aliases[normalized] ?? normalized;
+  if (!["all", "skills", "mcps"].includes(result)) throw new Error(`Unknown component selection: ${value}. Choose all, skills, or mcps.`);
+  return result;
+}
+
+export async function install({ repo: target, selected = ["codex"], only = "all", log = console.log }) {
   const { parse: parseToml, stringify: stringifyToml } = await import("smol-toml");
   const { parse, modify, applyEdits, printParseErrorCode } = await import("jsonc-parser");
   const repo = await realpath(resolve(target));
   if (!(await lstat(repo)).isDirectory()) throw new Error(`Repository is not a directory: ${repo}`);
   const names = selectClients(selected);
+  const components = selectComponents(only);
   const changes = new Map();
   const messages = [];
 
@@ -106,8 +115,7 @@ export async function install({ repo: target, selected, log = console.log }) {
     if (!previous?.equals(next)) changes.set(path, { content: next, previous, mode: stat?.mode });
   }
 
-  for (const name of names) {
-    const client = clients[name];
+  async function planMcp(name, client) {
     let config = client.config;
     if (name === "opencode") {
       const json = await statIfExists(join(repo, "opencode.json"));
@@ -176,10 +184,16 @@ export async function install({ repo: target, selected, log = console.log }) {
     }
     if (updated === undefined) messages.push(`${config}: kept existing apaper-mcp configuration.`);
     else await plan(path, updated);
+  }
 
+  for (const name of names) {
+    const client = clients[name];
+    if (components !== "skills") await planMcp(name, client);
     // OpenCode and Codex share the standard .agents/skills discovery directory.
-    for (const file of await skillFiles(join(toolkit, "skills"))) {
-      await plan(join(repo, client.skills, file), await readFile(join(toolkit, "skills", file)));
+    if (components !== "mcps") {
+      for (const file of await skillFiles(join(toolkit, "skills"))) {
+        await plan(join(repo, client.skills, file), await readFile(join(toolkit, "skills", file)));
+      }
     }
   }
 
@@ -202,10 +216,13 @@ export async function install({ repo: target, selected, log = console.log }) {
     } finally { await rm(temporary, { force: true }); }
   }
   for (const message of messages) log(message);
-  log(`Installed APaper for ${names.join(", ")} in ${repo} (${changes.size} files changed).`);
-  log("Restart your client in this repository. The default MCP command is uvx apaper-mcp (requires uv/uvx and Python 3.12+).");
-  if (names.includes("codex")) log("Codex loads project MCP configuration only after you trust the repository.");
-  if (names.includes("claude-code")) log("Claude Code may ask you to approve this project's MCP server.");
+  log(`Installed APaper (${components}) for ${names.join(", ")} in ${repo} (${changes.size} files changed).`);
+  log("Restart your client in this repository.");
+  if (components !== "skills") {
+    log("The default MCP command is uvx apaper-mcp (requires uv/uvx and Python 3.12+).");
+    if (names.includes("codex")) log("Codex loads project MCP configuration only after you trust the repository.");
+    if (names.includes("claude-code")) log("Claude Code may ask you to approve this project's MCP server.");
+  }
 }
 
 async function main() {
@@ -213,29 +230,33 @@ async function main() {
   if (args.includes("--help") || args.includes("-h")) { console.log(help); return; }
   const selected = [];
   let repo;
+  let only;
   for (let index = 0; index < args.length; index++) {
     const arg = args[index];
-    if (arg !== "--client" && arg !== "--repo") throw new Error(`Unknown option: ${arg}. Use --help.`);
+    if (arg !== "--client" && arg !== "--repo" && arg !== "--only") throw new Error(`Unknown option: ${arg}. Use --help.`);
     const value = args[++index];
     if (!value || value.startsWith("--")) throw new Error(`Missing value for ${arg}.`);
     if (arg === "--client") selected.push(value);
+    else if (arg === "--only") only = selectComponents(value);
     else repo = value;
   }
-  if (!selected.length || !repo) {
-    if (!process.stdin.isTTY) throw new Error("Non-interactive installation requires --client and --repo. Use --help.");
+  if (process.stdin.isTTY && (!selected.length || !repo || !only)) {
     const prompt = createInterface({ input: process.stdin, output: process.stdout });
     try {
-      if (!selected.length) selected.push(await prompt.question("Client: 1) Claude Code  2) Codex  3) OpenCode  4) All\nSelect names or numbers (comma-separated): "));
+      if (!selected.length) selected.push((await prompt.question("Client: 1) Claude Code  2) Codex  3) OpenCode  4) All\nSelect names or numbers (comma-separated) [codex]: ")).trim() || "codex");
       selectClients(selected);
+      if (!only) only = selectComponents((await prompt.question("Install: 1) All  2) Skills only  3) MCPs only\nSelect name or number [all]: ")).trim() || "all");
       if (!repo) repo = (await prompt.question(`Repository path [${process.cwd()}]: `)).trim() || process.cwd();
     } finally { prompt.close(); }
   }
+  if (!repo) throw new Error("Non-interactive installation requires --repo. Use --help.");
+  if (!selected.length) selected.push("codex");
   if (repo === "~" || repo.startsWith("~/")) {
     const { homedir } = await import("node:os");
     repo = join(homedir(), repo.slice(2));
   }
   await access(resolve(repo), constants.W_OK);
-  await install({ repo, selected });
+  await install({ repo, selected, only });
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === await realpath(process.argv[1])) {
