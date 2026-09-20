@@ -17,7 +17,7 @@ The skills are sourced from [`isomoes/skills`](https://github.com/isomoes/skills
 Use a Codex version with `codex plugin` support. Install **uv/uvx** and
 **Python 3.12+** for the research MCP server, with `uvx` on Codex's `PATH`.
 
-Once this change is published to `main`, add the marketplace and install APaper:
+Add the marketplace and install APaper:
 
 ```bash
 codex plugin marketplace add ai4paper/apaper-plugin

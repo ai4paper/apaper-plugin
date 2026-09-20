@@ -1,6 +1,6 @@
 {
   "name": "@ai4paper/apaper-plugin",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "APaper plugin for Codex, with academic writing skills and MCP configuration for Claude Code and OpenCode.",
   "type": "module",
   "files": [

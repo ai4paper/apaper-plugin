@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- Package APaper as a native Codex plugin with a repository marketplace, bundled MCP server configuration and skills, starter prompts, and installation instructions.
-- Launch the maintained Python MCP server with `uvx apaper-mcp`.
-- Replace native DSH/Cordis packaging with standard MCP templates and Agent Skills for Claude Code, Codex, and OpenCode.
-- Use Codex's native plugin installation commands; remove the custom installer scripts, npm executable, and installer-only dependencies.
+## [0.3.0] - 2026-09-20
+
+- Codex: Package APaper as a native plugin with a GitHub marketplace, bundled research MCP configuration, academic writing and figure skills, starter prompts, and installation instructions. (@isomoes) b51374f
+- Installation: Use Codex's native plugin commands; remove the custom installer scripts, npm executable, and installer-only dependencies. (@isomoes) b51374f
+- MCP: Launch the maintained Python server with `uvx apaper-mcp`. (@isomoes) 139d9e2
+- Compatibility: Replace DSH/Cordis packaging with portable Agent Skills and MCP configuration templates for Claude Code, Codex, and OpenCode. (@isomoes) 7abf271
 
 ## [0.2.3] - 2026-08-16
 
