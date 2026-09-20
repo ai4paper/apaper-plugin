@@ -1,14 +1,11 @@
 {
   "name": "@ai4paper/apaper-plugin",
   "version": "0.2.3",
-  "description": "Academic writing skills and MCP configuration for Claude Code, Codex, and OpenCode.",
+  "description": "APaper plugin for Codex, with academic writing skills and MCP configuration for Claude Code and OpenCode.",
   "type": "module",
-  "bin": {
-    "apaper-install": "scripts/install.mjs"
-  },
   "files": [
-    "install.sh",
-    "scripts",
+    ".codex-plugin",
+    ".mcp.json",
     "mcp",
     "skills",
     "README.md",
@@ -28,6 +25,7 @@
   "keywords": [
     "claude-code",
     "codex",
+    "codex-plugin",
     "opencode",
     "agent-skills",
     "mcp",
@@ -38,13 +36,6 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
-  },
-  "engines": {
-    "node": ">=20"
-  },
-  "dependencies": {
-    "jsonc-parser": "^3.3.1",
-    "smol-toml": "^1.4.2"
   },
   "devDependencies": {
     "@types/node": "^24.10.0",

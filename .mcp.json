@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "apaper-mcp": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["apaper-mcp"]
+    }
+  }
+}

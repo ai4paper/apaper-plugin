@@ -1,4 +1,4 @@
-# Publish the MCP configuration and skills toolkit when a vX.Y.Z tag is pushed.
+# Publish the native plugin package when a vX.Y.Z tag is pushed.
 #
 # Authentication uses npm trusted publishing through OIDC, with no NPM_TOKEN.
 # After the first manual publish, configure npmjs.com trusted publishing with:

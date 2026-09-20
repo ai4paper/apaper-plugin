@@ -1,8 +1,8 @@
-# APaper tools
+# APaper plugin
 
-Academic paper-authoring tools for **Claude Code, Codex, and OpenCode**, distributed
-as standard MCP configuration and Agent Skills. One `install.sh` installs the
-tools into a repository you choose.
+Academic paper-authoring tools packaged as a native **Codex plugin**: literature
+research through MCP, academic writing skills, and publication-quality figures.
+MCP templates and portable skills are also included for other compatible clients.
 
 | Tool | Purpose |
 | --- | --- |
@@ -12,127 +12,62 @@ tools into a repository you choose.
 
 The skills are sourced from [`isomoes/skills`](https://github.com/isomoes/skills).
 
-## Install
+## Install the Codex plugin
 
-The installer requires **Node.js 20+**, **npm**, **Bash**, **curl**, and **tar** (Linux,
-macOS, or WSL). The target repository directory must already exist.
-Running the MCP server requires **uv/uvx** and **Python 3.12+**.
-Download and run the installer directly:
+Use a Codex version with `codex plugin` support. Install **uv/uvx** and
+**Python 3.12+** for the research MCP server, with `uvx` on Codex's `PATH`.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/ai4paper/apaper-plugin/main/install.sh -o /tmp/apaper-install.sh
-bash /tmp/apaper-install.sh
-```
-
-Choose Claude Code, Codex, OpenCode, or all three, then choose all components,
-skills only, or MCPs only and enter the repository path. Multiple client names
-or numbers can be separated by commas. Press Enter at each prompt to install
-**all components for Codex** in the current working directory.
-
-Or install into a specific repository in one command:
+Once this change is published to `main`, add the marketplace and install APaper:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ai4paper/apaper-plugin/main/install.sh | bash -s -- --repo /path/to/paper
+codex plugin marketplace add ai4paper/apaper-plugin
+codex plugin add apaper-plugin@ai4paper
 ```
 
-Select just the clients you need with the downloaded script:
+Restart Codex and start a new thread in your paper repository. The plugin bundles
+`apaper-mcp`, `writing`, and `creating-figures`. Codex manages installation and
+updates. The first MCP launch downloads `apaper-mcp` from PyPI.
+Figure compilation additionally needs LaTeX or Typst, as described in the skill.
+
+In the Codex app, open the plugins directory, choose the **AI4Paper** marketplace,
+and select **APaper**. Try these prompts:
+
+- "Use APaper to find related papers for my research topic."
+- "Use APaper to revise this abstract for clarity and precision."
+- "Use APaper to create a TikZ architecture diagram for this method."
+
+To test a local checkout before publishing, run from this repository:
 
 ```bash
-bash /tmp/apaper-install.sh --client claude-code --repo /path/to/paper
-bash /tmp/apaper-install.sh --client codex --repo /path/to/paper
-bash /tmp/apaper-install.sh --client opencode --repo /path/to/paper
-bash /tmp/apaper-install.sh --client claude-code,codex --repo "/path/to/my paper"
+codex plugin marketplace add .
+codex plugin add apaper-plugin@ai4paper
 ```
 
-`claude` and `claudecode` are aliases for `claude-code`. You can also repeat
-`--client`. The default client is `codex`; `--client all` selects all three clients.
-Use `--only` to select which components to install (default: `all`):
+Use either the local checkout or GitHub as the source for the `ai4paper`
+marketplace. To switch sources, run `codex plugin marketplace remove ai4paper`
+before adding the other source.
+
+For updates from GitHub:
 
 ```bash
-bash /tmp/apaper-install.sh --repo /path/to/paper --only skills
-bash /tmp/apaper-install.sh --repo /path/to/paper --only mcps
+codex plugin marketplace upgrade ai4paper
+codex plugin add apaper-plugin@ai4paper
 ```
 
-These choices work with any selected clients. Skills-only installs copy the skills;
-MCPs-only installs configure the MCP server. Non-interactive runs require `--repo`.
-Run `bash /tmp/apaper-install.sh --help` for usage. Piping the script without
-options also supports the interactive picker when a terminal is available.
+Then start a new thread. To uninstall, run
+`codex plugin remove apaper-plugin@ai4paper`.
 
-The standalone script downloads a GitHub source archive and installs its parser
-dependencies into a temporary folder, then removes that folder on exit. No clone
-is needed, and no npm dependencies are added to your paper repo. Downloads use
-`main` by default; set `APAPER_REF` to a branch, tag, or commit to select a version:
+If you previously used the repository installer for Codex, remove its
+`apaper-mcp` entry from your paper repository's `.codex/config.toml` and its copied
+`.agents/skills/{writing,creating-figures}` directories before switching to the
+plugin. Save local customizations first; OpenCode may also use those shared
+skills. This avoids loading APaper twice.
 
-```bash
-APAPER_REF=<tag-or-commit> bash /tmp/apaper-install.sh --client codex --repo /path/to/paper
-```
-
-Choose a revision containing the new installer. These online commands become
-available after this change is pushed to `main`; earlier tags contain the legacy
-DSH plugin. A complete local checkout still supports `./install.sh` and uses its
-own files, installing parser dependencies into that checkout when needed.
-
-The client launches the maintained Python MCP server on demand with
-`uvx apaper-mcp`; first use requires access to PyPI. Make sure `uvx` is on the
-client's `PATH`. Node.js/npm are used for this toolkit's installer.
-For IACR PDF downloads, upstream also requires Chromium on `PATH` or Scrapling's
-browser runtime (`uvx --from 'scrapling[fetchers]' scrapling install`). Upstream
-recommends 15-minute OpenCode timeouts for those browser-assisted downloads;
-see its [runtime and MCP setup instructions](https://github.com/ai4paper/apaper-mcp#install-from-pypi).
-Figure compilation needs the relevant LaTeX or Typst tools described in the skill.
-
-The npm distribution also exposes the same installer as `apaper-install`:
-
-```bash
-npx -y --package @ai4paper/apaper-plugin apaper-install --client codex --repo /path/to/paper
-```
-
-This npm command becomes available once a release containing the new installer
-is published; earlier releases contain the legacy DSH plugin.
-
-## Files installed
-
-All paths are relative to the selected repository:
-
-| Client | MCP config | Skills |
-| --- | --- | --- |
-| Claude Code | `.mcp.json` | `.claude/skills/{writing,creating-figures}/` |
-| Codex | `.codex/config.toml` | `.agents/skills/{writing,creating-figures}/` |
-| OpenCode | `opencode.json` (or existing `opencode.jsonc`) | `.agents/skills/{writing,creating-figures}/` |
-
-Codex and OpenCode share the standard `.agents/skills` directory. Each skill is
-copied with all reference files and examples, so the installed tools remain
-usable after moving or removing the toolkit checkout. Global client settings
-are untouched.
-
-The installer adds the `apaper-mcp` entry while keeping other servers and
-settings. The previous default `npx -y @ai4paper/apaper-mcp` launcher is migrated
-to `uvx apaper-mcp`, preserving environment variables and other server settings.
-Other existing launch commands, including pinned versions, are left as configured.
-JSONC comments and normal TOML formatting are preserved. Migrating an old Codex
-launcher reserializes its TOML; the original formatting/comments remain in the
-backup. If Codex uses an inline `mcp_servers` table that
-cannot be extended, the installer reserializes the TOML and reports that its
-formatting/comments changed; the original is backed up.
-
-Re-running updates packaged skill files and leaves unrelated files intact.
-Before overwriting any changed file, the installer saves its original under
-`.apaper-backups/<unique-install-id>/`, retaining its relative path. Identical
-files are skipped. Backups may contain the same credentials as the original
-configs. Invalid configs, ambiguous OpenCode configs (both JSON and JSONC present),
-and symlink destinations are rejected before target files are changed.
-
-Restart the client in your paper repository after installation. Claude Code
-may ask for project MCP approval; Codex loads project MCP config only for trusted
-repositories. Review the client's MCP list and skill list to confirm discovery.
-
-These locations and formats follow the official documentation:
-[Claude Code MCP](https://code.claude.com/docs/en/mcp),
-[Claude Code skills](https://code.claude.com/docs/en/skills),
-[Codex MCP](https://developers.openai.com/codex/mcp/),
-[Codex skills](https://developers.openai.com/codex/skills/),
-[OpenCode MCP](https://opencode.ai/docs/mcp-servers/), and
-[OpenCode skills](https://opencode.ai/docs/skills/).
+The native package uses [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json),
+[`.mcp.json`](.mcp.json), and the existing [`skills/`](skills/). The
+[marketplace catalog](.agents/plugins/marketplace.json) points at the repository
+root, so GitHub installations use the skills bundled in the same revision.
+See the [official plugin packaging documentation](https://developers.openai.com/plugins/build/plugins).
 
 ## Manual installation and other clients
 
@@ -140,15 +75,6 @@ These locations and formats follow the official documentation:
 two folders under [`skills/`](skills/) into your client's supported skill
 directory, keeping each folder's `SKILL.md` and supporting files together.
 Any client supporting stdio MCP can launch `uvx` with arguments `["apaper-mcp"]`.
-
-This replaces the native DeepSeek Harness/Cordis packaging. The `./dsh` export,
-DSH preset, and DSH runtime dependency are no longer shipped. Existing DSH users
-can keep their previous release or configure the MCP server and skills through
-their client's supported interfaces; `install.sh` targets the three clients above.
-
-To remove an installation, delete only the `apaper-mcp` entry and the two copied
-skill directories from the paths above. Shared `.agents/skills` serve both Codex
-and OpenCode. Restore any locally customized files from `.apaper-backups` as needed.
 
 ## Development and publishing
 
@@ -161,8 +87,11 @@ npm test
 npm run pack:check
 ```
 
-The npm package ships the installer, MCP templates, and skills. Release publishing
-uses npm trusted publishing through GitHub OIDC. See
+The npm package ships the native Codex manifest, MCP configuration, MCP templates,
+and skills. Node.js and npm are used for development and publishing. Keep the
+version in `.codex-plugin/plugin.json` aligned with `package.json` and
+`package-lock.json` when preparing a release. Release publishing uses npm trusted
+publishing through GitHub OIDC. See
 [`prompt/release.md`](prompt/release.md) for the release process.
 
 ## License

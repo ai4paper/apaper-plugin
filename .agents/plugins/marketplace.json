@@ -1,0 +1,20 @@
+{
+  "name": "ai4paper",
+  "interface": {
+    "displayName": "AI4Paper"
+  },
+  "plugins": [
+    {
+      "name": "apaper-plugin",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -4,11 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- Launch the maintained Python MCP server with `uvx apaper-mcp` and migrate the previous default npm launcher on reinstall, preserving server settings and backing up changed configs.
+- Package APaper as a native Codex plugin with a repository marketplace, bundled MCP server configuration and skills, starter prompts, and installation instructions.
+- Launch the maintained Python MCP server with `uvx apaper-mcp`.
 - Replace native DSH/Cordis packaging with standard MCP templates and Agent Skills for Claude Code, Codex, and OpenCode.
-- Add a repository-scoped `install.sh` with interactive client selection, scriptable options, config merging, and backups of changed files.
-- Support downloading `install.sh` on its own or piping it to Bash; fetch the toolkit from GitHub and clean up temporary files automatically.
-- Publish the same installer as `apaper-install` and cover installation, updates, and config preservation with regression tests.
+- Use Codex's native plugin installation commands; remove the custom installer scripts, npm executable, and installer-only dependencies.
 
 ## [0.2.3] - 2026-08-16
 

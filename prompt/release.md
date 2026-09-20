@@ -2,7 +2,7 @@
 
 Use this prompt when preparing a release for `apaper-plugin`. Pushing a
 `v*` tag triggers `.github/workflows/publish.yml`, which verifies the version
-files and publishes the MCP configuration and skills toolkit to npm. A successful publish then
+files and publishes the native plugin package to npm. A successful publish then
 triggers `.github/workflows/release.yml` to create the GitHub Release from
 `CHANGELOG.md`.
 
@@ -50,8 +50,10 @@ Do the following in order:
    - the `## [<version>] - <YYYY-MM-DD>` block becomes the GitHub Release
      body, so trim it to release-worthy bullets
 
-2. Bump the top-level `version` in `package.json` to `<version>`.
-   The release workflow refuses to publish if it disagrees with the tag.
+2. Bump `version` in `package.json`, `package-lock.json` (including the root
+   package entry), and `.codex-plugin/plugin.json` to `<version>`.
+   The release workflow refuses to publish if the package disagrees with the tag,
+   and the tests require the native Codex plugin version to match the package.
 
 3. Stage and commit the changes with a release-style message such as
    `release: v<version>`. Do NOT create the tag in the same commit.

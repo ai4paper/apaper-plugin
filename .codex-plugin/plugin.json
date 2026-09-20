@@ -1,0 +1,29 @@
+{
+  "name": "apaper-plugin",
+  "version": "0.2.3",
+  "description": "Academic paper research, writing, and publication-quality figures in Codex.",
+  "author": {
+    "name": "ai4paper",
+    "url": "https://github.com/ai4paper"
+  },
+  "homepage": "https://github.com/ai4paper/apaper-plugin#readme",
+  "repository": "https://github.com/ai4paper/apaper-plugin",
+  "license": "MIT",
+  "keywords": ["academic-writing", "research", "latex", "typst", "mcp"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "APaper",
+    "shortDescription": "Research, write, and illustrate academic papers",
+    "longDescription": "Search the literature with apaper-mcp, revise academic prose and theorem statements, and create publication-quality TikZ or CeTZ figures. The MCP server requires uvx and Python 3.12+; figure compilation requires LaTeX or Typst.",
+    "developerName": "ai4paper",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://github.com/ai4paper/apaper-plugin",
+    "defaultPrompt": [
+      "Find related papers for my research topic.",
+      "Revise my abstract for clarity and precision.",
+      "Create a publication-quality diagram for my paper."
+    ]
+  }
+}
