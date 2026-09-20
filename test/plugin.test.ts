@@ -40,10 +40,13 @@ test("marketplace resolves the bundled plugin with matching release metadata", a
 test("npm archive contains a standalone native plugin and all skill resources", async t => {
   const work = await mkdtemp(join(tmpdir(), "apaper-package-"));
   t.after(() => rm(work, { recursive: true, force: true }));
-  const [packed] = JSON.parse(execFileSync("npm", [
+  const report = JSON.parse(execFileSync("npm", [
     "pack", "--json", "--ignore-scripts", "--cache", join(work, "npm-cache"),
     "--pack-destination", work,
   ], { cwd: root, encoding: "utf8" }));
+  // npm 11 returns an array; npm 12 keys the results by package name.
+  const packed = Array.isArray(report) ? report[0] : report["@ai4paper/apaper-plugin"];
+  assert.ok(packed?.filename, "npm pack must report the generated archive");
   execFileSync("tar", ["-xzf", join(work, packed.filename), "-C", work]);
   const installed = join(work, "package");
   const pkg = await json(join(installed, "package.json"));
