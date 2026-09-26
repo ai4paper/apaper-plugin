@@ -37,6 +37,35 @@ test("marketplace resolves the bundled plugin with matching release metadata", a
   );
 });
 
+test("OpenCode plugin registers the research MCP server and bundled skills", async () => {
+  const { default: plugin } = await import("@ai4paper/apaper-plugin/server");
+  const servers = new Map<string, unknown>([["existing", { type: "remote", url: "https://example.com" }]]);
+  const skills = new Map<string, any>([["writing", { id: "writing", content: "user override" }]]);
+  const ctx = {
+    mcp: {
+      transform: async (callback: (editor: any) => void) => callback({
+        get: (name: string) => servers.get(name),
+        set: (name: string, config: unknown) => servers.set(name, config),
+      }),
+    },
+    skill: {
+      transform: async (callback: (editor: any) => void) => callback({
+        get: (id: string) => skills.get(id),
+        add: (skill: any) => skills.set(skill.id, skill),
+      }),
+    },
+  };
+  assert.equal(plugin.id, "ai4paper.apaper");
+  await plugin.setup(ctx);
+  assert.deepEqual(servers.get("apaper-mcp"), { type: "local", command: ["uvx", "apaper-mcp"] });
+  assert.equal(skills.get("writing").content, "user override", "User-defined skills take precedence");
+  const figures = skills.get("creating-figures");
+  assert.equal(figures.name, "creating-figures");
+  assert.equal(figures.path, join(root, "skills/creating-figures/SKILL.md"));
+  assert.match(figures.description, /publication-quality scientific figures/);
+  assert.ok(figures.content.startsWith("# Creating Scientific Figures"));
+});
+
 test("npm archive contains a standalone native plugin and all skill resources", async t => {
   const work = await mkdtemp(join(tmpdir(), "apaper-package-"));
   t.after(() => rm(work, { recursive: true, force: true }));
@@ -52,6 +81,10 @@ test("npm archive contains a standalone native plugin and all skill resources", 
   const pkg = await json(join(installed, "package.json"));
   assert.equal(pkg.bin, undefined, "The plugin must not expose an installer command");
   assert.deepEqual(pkg.dependencies ?? {}, {}, "The plugin needs no npm runtime dependencies");
+  for (const entry of [".", "./server"]) {
+    const target = pkg.exports[entry];
+    assert.ok(packed.files.some((file: { path: string }) => file.path === target.slice(2)), `Missing ${target}`);
+  }
   const manifest = await json(join(installed, ".codex-plugin/plugin.json"));
   const config = await json(join(installed, manifest.mcpServers));
   assert.equal(config.mcpServers["apaper-mcp"].command, "uvx");

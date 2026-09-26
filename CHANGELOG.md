@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- OpenCode: Package APaper as an OpenCode V2 plugin that registers the `apaper-mcp` server and the bundled `writing` and `creating-figures` skills; install with `opencode plugin add @ai4paper/apaper-plugin`. (@isomoes)
+
 ## [0.3.0] - 2026-09-20
 
 - Codex: Package APaper as a native plugin with a GitHub marketplace, bundled research MCP configuration, academic writing and figure skills, starter prompts, and installation instructions. (@isomoes) b51374f
